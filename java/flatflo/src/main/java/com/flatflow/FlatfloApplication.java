@@ -1,4 +1,4 @@
-package com.flatflo;
+package com.flatflow;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;

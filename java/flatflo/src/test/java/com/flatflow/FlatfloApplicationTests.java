@@ -1,4 +1,4 @@
-package com.flatflo;
+package com.flatflow;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
