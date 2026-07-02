@@ -1,0 +1,29 @@
+<section class="search-page">
+  <app-filter-bar
+    [areas]="areas()"
+    [sort]="criteria()?.sort ?? 'BEST_DEAL'"
+    (search)="onSearch($event)" />
+
+  @if (loading()) {
+    <p class="status">Searching…</p>
+  } @else if (response(); as res) {
+    <app-results-meta
+      [count]="res.count"
+      [dupCount]="res.dupCount"
+      [sort]="res.sort"
+      (sortChange)="onSortChange($event)" />
+
+    @if (res.results.length > 0) {
+      @for (group of res.results; track group.groupId) {
+        <app-listing-card [group]="group" />
+      }
+    } @else {
+      <div class="empty">
+        <h2>No flats match these filters</h2>
+        <p>Try widening your budget or BHK range.</p>
+      </div>
+    }
+  } @else if (searched()) {
+    <p class="status">Something went wrong. Please try again.</p>
+  }
+</section>

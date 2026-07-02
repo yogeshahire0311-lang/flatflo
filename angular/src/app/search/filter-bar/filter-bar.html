@@ -1,0 +1,48 @@
+<form class="filter-bar" (ngSubmit)="submit()">
+  <label class="field">
+    <span>Location</span>
+    <select (change)="onLocation($any($event.target).value)" required>
+      <option value="" disabled selected>Select area</option>
+      @for (area of areas(); track area.id) {
+        <option [value]="area.id">{{ area.name }}</option>
+      }
+    </select>
+  </label>
+
+  <label class="field">
+    <span>BHK</span>
+    <select (change)="onBhk($any($event.target).value)">
+      @for (opt of bhkOptions; track opt.value) {
+        <option [value]="opt.value" [selected]="opt.value === bhk()">{{ opt.label }}</option>
+      }
+    </select>
+  </label>
+
+  <label class="field">
+    <span>Budget min (₹)</span>
+    <input type="number" min="0" inputmode="numeric"
+           (input)="onBudgetMin($any($event.target).value)" placeholder="No min" />
+  </label>
+
+  <label class="field">
+    <span>Budget max (₹)</span>
+    <input type="number" min="0" inputmode="numeric"
+           (input)="onBudgetMax($any($event.target).value)" placeholder="No max" />
+  </label>
+
+  <label class="field">
+    <span>Furnishing</span>
+    <select (change)="onFurnishing($any($event.target).value)">
+      <option value="" [selected]="furnishing() === null">Any</option>
+      @for (opt of furnishingOptions; track opt.value) {
+        <option [value]="opt.value" [selected]="opt.value === furnishing()">{{ opt.label }}</option>
+      }
+    </select>
+  </label>
+
+  @if (activeFilterCount() > 0) {
+    <span class="filter-badge">Filters · {{ activeFilterCount() }}</span>
+  }
+
+  <button type="submit" class="search-btn" [disabled]="!canSearch()">Search</button>
+</form>

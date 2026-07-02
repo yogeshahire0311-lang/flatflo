@@ -1,0 +1,11 @@
+<div class="results-meta">
+  <span class="summary">{{ summary() }}</span>
+  <label class="sort">
+    <span class="sr-only">Sort results</span>
+    <select (change)="onSort($any($event.target).value)">
+      @for (opt of sortOptions; track opt.value) {
+        <option [value]="opt.value" [selected]="opt.value === sort()">{{ opt.label }}</option>
+      }
+    </select>
+  </label>
+</div>
