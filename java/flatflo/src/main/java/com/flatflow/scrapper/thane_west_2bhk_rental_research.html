@@ -1,0 +1,262 @@
+
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:var(--font-sans)}
+.header{padding:1.5rem 0 1rem}
+.header h1{font-size:18px;font-weight:500;color:var(--text-primary)}
+.header p{font-size:13px;color:var(--text-secondary);margin-top:4px}
+.badges{display:flex;gap:8px;margin-top:10px;flex-wrap:wrap}
+.badge{font-size:11px;padding:3px 10px;border-radius:20px;font-weight:500}
+.badge-blue{background:#E6F1FB;color:#0C447C}
+.badge-green{background:#EAF3DE;color:#3B6D11}
+.badge-amber{background:#FAEEDA;color:#854F0B}
+.section-title{font-size:13px;font-weight:500;color:var(--text-secondary);text-transform:uppercase;letter-spacing:.05em;margin:1.5rem 0 .75rem}
+table{width:100%;border-collapse:collapse;font-size:12.5px}
+th{font-size:11px;font-weight:500;color:var(--text-muted);text-transform:uppercase;letter-spacing:.05em;padding:8px 10px;text-align:left;border-bottom:1px solid var(--border)}
+td{padding:9px 10px;border-bottom:0.5px solid var(--border);color:var(--text-primary);vertical-align:top;line-height:1.4}
+tr:last-child td{border-bottom:none}
+tr:hover td{background:var(--surface-1)}
+.star{color:#eda100;font-weight:700;font-size:13px}
+.badge-sm{display:inline-block;font-size:10px;padding:2px 7px;border-radius:20px;font-weight:500;margin-top:2px;white-space:nowrap}
+.uf{background:#F1EFE8;color:#5F5E5A}
+.sf{background:#E6F1FB;color:#0C447C}
+.ff{background:#EAF3DE;color:#3B6D11}
+.best{background:#FAEEDA;color:#854F0B}
+.rent{font-size:14px;font-weight:500;color:#185FA5}
+.area-card{background:var(--surface-1);border:0.5px solid var(--border);border-radius:12px;padding:1rem 1.25rem;margin-bottom:.75rem}
+.area-card h3{font-size:14px;font-weight:500;color:var(--text-primary)}
+.area-card p{font-size:13px;color:var(--text-secondary);margin-top:4px;line-height:1.5}
+.pros-cons{display:grid;grid-template-columns:1fr 1fr;gap:.75rem;margin-top:.75rem}
+.pc-box{background:var(--surface-2);border-radius:8px;padding:.75rem}
+.pc-box h4{font-size:11px;font-weight:500;letter-spacing:.04em;margin-bottom:6px}
+.pc-box.pro h4{color:#3B6D11}
+.pc-box.con h4{color:#993C1D}
+.pc-box li{font-size:12px;color:var(--text-secondary);line-height:1.6;list-style:none;padding-left:0}
+.insight-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:.75rem;margin-top:.75rem}
+.insight-card{background:var(--surface-1);border:0.5px solid var(--border);border-radius:12px;padding:1rem}
+.insight-card .num{font-size:22px;font-weight:500;color:var(--text-primary)}
+.insight-card .label{font-size:12px;color:var(--text-secondary);margin-top:3px}
+.insight-card .sub{font-size:11px;color:var(--text-muted);margin-top:5px}
+.divider{border:none;border-top:0.5px solid var(--border);margin:1.5rem 0}
+.src{font-size:11px;color:var(--text-muted);margin-top:4px}
+a{color:#185FA5;text-decoration:none}
+a:hover{text-decoration:underline}
+.best-tag{display:inline-block;background:#FAEEDA;color:#854F0B;font-size:10px;font-weight:500;padding:1px 6px;border-radius:4px;margin-left:6px;vertical-align:middle}
+.no-wrap{white-space:nowrap}
+@media(prefers-color-scheme:dark){
+  .badge-blue{background:#0C447C;color:#B5D4F4}
+  .badge-green{background:#3B6D11;color:#C0DD97}
+  .badge-amber{background:#854F0B;color:#FAC775}
+  .sf{background:#0C447C;color:#B5D4F4}
+  .uf{background:#444441;color:#D3D1C7}
+  .ff{background:#3B6D11;color:#C0DD97}
+  .best{background:#854F0B;color:#FAC775}
+}
+</style>
+
+<div class="header">
+  <h2 style="font-size:0;position:absolute;">2 BHK rental listings in Thane West under ₹25,000 — June 2026</h2>
+  <h1>2 BHK rentals in Thane West — under ₹25,000</h1>
+  <p>Research compiled from NoBroker, 99acres, MagicBricks, Housing.com, SquareYards &amp; OLX · June 2026</p>
+  <div class="badges">
+    <span class="badge badge-blue">10 listings found</span>
+    <span class="badge badge-green">Budget: ₹20K–₹25K</span>
+    <span class="badge badge-amber">⭐ 3 Best picks highlighted</span>
+  </div>
+</div>
+
+<p class="section-title">All listings</p>
+
+<div style="overflow-x:auto">
+<table>
+  <thead>
+    <tr>
+      <th>#</th>
+      <th>Society / Building</th>
+      <th>Locality</th>
+      <th>Rent/mo</th>
+      <th>Area</th>
+      <th>Furnishing</th>
+      <th>Key amenities</th>
+      <th>Nearby</th>
+      <th>Status</th>
+      <th>Source</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>1</td>
+      <td><strong>Vihang Valley Phase 2</strong> <span class="best-tag">⭐ Best</span></td>
+      <td class="no-wrap">Kasarvadavali,<br>Ghodbunder Rd</td>
+      <td class="rent">₹25,000</td>
+      <td class="no-wrap">905 sq ft<br><span style="font-size:11px;color:var(--text-muted)">(carpet)</span></td>
+      <td><span class="badge-sm ff">Fully furnished</span></td>
+      <td style="font-size:12px">Gym, pool, 24×7 security, lift, park view, 1 parking, CCTV</td>
+      <td style="font-size:12px">Wagh Billa Naka, Hiranandani Joggers Park, Seven Square School</td>
+      <td><span class="badge-sm" style="background:#EAF3DE;color:#3B6D11">Available</span></td>
+      <td><a href="https://www.squareyards.com/rent/property-for-rent-in-vihang-valley-phase-2-thane" target="_blank">SquareYards</a></td>
+    </tr>
+    <tr>
+      <td>2</td>
+      <td><strong>Vihang Valley Phase 2</strong></td>
+      <td class="no-wrap">Kasarvadavali,<br>Ghodbunder Rd</td>
+      <td class="rent">₹25,000</td>
+      <td class="no-wrap">530 sq ft<br><span style="font-size:11px;color:var(--text-muted)">(carpet)</span></td>
+      <td><span class="badge-sm sf">Semi-furnished</span></td>
+      <td style="font-size:12px">Gym, pool, security, lift, 9th floor, badminton court</td>
+      <td style="font-size:12px">Hiranandani Joggers Park, nearby schools, metro access</td>
+      <td><span class="badge-sm" style="background:#EAF3DE;color:#3B6D11">Available</span></td>
+      <td><a href="https://www.squareyards.com/rent/property-for-rent-in-vihang-valley-phase-2-thane" target="_blank">SquareYards</a></td>
+    </tr>
+    <tr>
+      <td>3</td>
+      <td><strong>Haware City (Puranik)</strong> <span class="best-tag">⭐ Best</span></td>
+      <td class="no-wrap">Kasarvadavali,<br>Ghodbunder Rd</td>
+      <td class="rent">₹25,000</td>
+      <td class="no-wrap">~850 sq ft<br><span style="font-size:11px;color:var(--text-muted)">(built-up)</span></td>
+      <td><span class="badge-sm sf">Semi-furnished</span></td>
+      <td style="font-size:12px">Lift, car parking (2 spots), 24×7 security, gated community, gym</td>
+      <td style="font-size:12px">Wonder Mall, Jupiter Hospital, Wagh Billa Naka</td>
+      <td><span class="badge-sm" style="background:#EAF3DE;color:#3B6D11">Available</span></td>
+      <td><a href="https://www.nestoria.in/haware-city/flat/rent/bhk-2" target="_blank">Nestoria / NoBroker</a></td>
+    </tr>
+    <tr>
+      <td>4</td>
+      <td><strong>Raunak Heights H2/H3</strong></td>
+      <td class="no-wrap">Kasarvadavali,<br>Ghodbunder Rd</td>
+      <td class="rent">₹23,000–₹25,000</td>
+      <td class="no-wrap">900 sq ft<br><span style="font-size:11px;color:var(--text-muted)">(carpet)</span></td>
+      <td><span class="badge-sm uf">Unfurnished</span></td>
+      <td style="font-size:12px">Garden, gym, lift, gated community, vastu compliant, security</td>
+      <td style="font-size:12px">New Horizon School, Hiranandani Estate, Wagh Billa Naka</td>
+      <td><span class="badge-sm" style="background:#EAF3DE;color:#3B6D11">Available</span></td>
+      <td><a href="https://www.nestoria.in/haware-city/flat/rent/bhk-2" target="_blank">Nestoria</a></td>
+    </tr>
+    <tr>
+      <td>5</td>
+      <td><strong>Raunak Unnathi Greens</strong></td>
+      <td class="no-wrap">Kasarvadavali,<br>Ghodbunder Rd</td>
+      <td class="rent">₹22,000–₹24,000</td>
+      <td class="no-wrap">900 sq ft<br><span style="font-size:11px;color:var(--text-muted)">(carpet)</span></td>
+      <td><span class="badge-sm uf">Unfurnished</span></td>
+      <td style="font-size:12px">Gated community, gym, garden, lift, power backup, 16th floor option</td>
+      <td style="font-size:12px">New Horizon School, Shakti Fitness, Hiranandani Joggers Park</td>
+      <td><span class="badge-sm" style="background:#EAF3DE;color:#3B6D11">Available</span></td>
+      <td><a href="https://www.nobroker.in/2bhk-flats-for-rent-in-kasarvadavali_thane_west_mumbai" target="_blank">NoBroker</a></td>
+    </tr>
+    <tr>
+      <td>6</td>
+      <td><strong>Vihang Hills</strong></td>
+      <td class="no-wrap">Owale,<br>Ghodbunder Rd</td>
+      <td class="rent">₹20,000</td>
+      <td class="no-wrap">~700 sq ft<br><span style="font-size:11px;color:var(--text-muted)">(built-up)</span></td>
+      <td><span class="badge-sm sf">Semi-furnished</span></td>
+      <td style="font-size:12px">Gym, jogging track, kids play area, clubhouse, lift, 24×7 security</td>
+      <td style="font-size:12px">Ghodbunder Rd, Hiranandani Meadows, Shakti Fitness</td>
+      <td><span class="badge-sm" style="background:#EAF3DE;color:#3B6D11">Available</span></td>
+      <td><a href="https://www.99acres.com/2-bhk-flats-for-rent-in-thane-west-mumbai-ffid" target="_blank">99acres</a></td>
+    </tr>
+    <tr>
+      <td>7</td>
+      <td><strong>Haware City (Puranik/Prakruti Heights)</strong></td>
+      <td class="no-wrap">Kasarvadavali,<br>Haware Citi</td>
+      <td class="rent">₹20,000–₹22,000</td>
+      <td class="no-wrap">500–700 sq ft<br><span style="font-size:11px;color:var(--text-muted)">(carpet)</span></td>
+      <td><span class="badge-sm uf">Unfurnished</span></td>
+      <td style="font-size:12px">Gated, lift, parking, 9th–15th floor, close to metro, school, hospital</td>
+      <td style="font-size:12px">Jupiter Hospital, Wonder Mall, D'Mart, schools</td>
+      <td><span class="badge-sm" style="background:#EAF3DE;color:#3B6D11">Available</span></td>
+      <td><a href="https://www.99acres.com/2-bhk-flats-for-rent-in-thane-west-mumbai-15-thousand-to-20-thousand-ffid" target="_blank">99acres</a></td>
+    </tr>
+    <tr>
+      <td>8</td>
+      <td><strong>Ghodbunder Rd (standalone bldg, near Viviana Mall)</strong> <span class="best-tag">⭐ Best</span></td>
+      <td class="no-wrap">Ghodbunder Rd,<br>Opp. Viviana Mall</td>
+      <td class="rent">₹20,000</td>
+      <td class="no-wrap">7,800 sq ft*<br><span style="font-size:11px;color:var(--text-muted)">(plot/complex — flat approx 700–800 sq ft)</span></td>
+      <td><span class="badge-sm uf">Unfurnished</span></td>
+      <td style="font-size:12px">Negotiable deposit (₹1 lakh), vitrified flooring, balcony</td>
+      <td style="font-size:12px">Viviana Mall, Jupiter Hospital, Thane railway station (~3 km)</td>
+      <td><span class="badge-sm" style="background:#EAF3DE;color:#3B6D11">Available</span></td>
+      <td><a href="https://www.realestateindia.com/thane-property/2-bhk-flats-apartments-for-rent-in-thane-west-ffid.htm" target="_blank">RealEstateIndia</a></td>
+    </tr>
+    <tr>
+      <td>9</td>
+      <td><strong>RDC Woods – Pinewood</strong></td>
+      <td class="no-wrap">Bhawani Nagar,<br>Kasarvadavali</td>
+      <td class="rent">₹22,000–₹24,000</td>
+      <td class="no-wrap">~700 sq ft</td>
+      <td><span class="badge-sm sf">Semi-furnished</span></td>
+      <td style="font-size:12px">Gated, lift, security, CCTV, garden view</td>
+      <td style="font-size:12px">Hiranandani Joggers Park, Hiranandani Meadows, Wagh Billa Naka</td>
+      <td><span class="badge-sm" style="background:#EAF3DE;color:#3B6D11">Available</span></td>
+      <td><a href="https://www.nobroker.in/2bhk-flats-for-rent-in-kasarvadavali_thane_west_mumbai" target="_blank">NoBroker</a></td>
+    </tr>
+    <tr>
+      <td>10</td>
+      <td><strong>Soham Tropical Lagoon</strong></td>
+      <td class="no-wrap">Ghodbunder Rd,<br>Bhawani Nagar, Kasarvadavali</td>
+      <td class="rent">₹22,000–₹25,000</td>
+      <td class="no-wrap">~750 sq ft</td>
+      <td><span class="badge-sm sf">Semi-furnished</span></td>
+      <td style="font-size:12px">Security, gated, lift, parking</td>
+      <td style="font-size:12px">Wagh Billa Naka, Hiranandani Joggers Park</td>
+      <td><span class="badge-sm" style="background:#EAF3DE;color:#3B6D11">Available</span></td>
+      <td><a href="https://www.nobroker.in/2bhk-flats-for-rent-in-kasarvadavali_thane_west_mumbai" target="_blank">NoBroker</a></td>
+    </tr>
+  </tbody>
+</table>
+</div>
+
+<hr class="divider">
+
+<p class="section-title">Market insights</p>
+<div class="insight-grid">
+  <div class="insight-card">
+    <div class="num">₹20K–25K</div>
+    <div class="label">Typical 2 BHK rent range</div>
+    <div class="sub">Unfurnished in Kasarvadavali / Owale / Haware City (June 2026)</div>
+  </div>
+  <div class="insight-card">
+    <div class="num">2–3 months</div>
+    <div class="label">Typical security deposit</div>
+    <div class="sub">₹40,000–₹75,000 refundable; some ask ₹1 lakh flat</div>
+  </div>
+  <div class="insight-card">
+    <div class="num">450–905 sq ft</div>
+    <div class="label">Carpet area range (budget segment)</div>
+    <div class="sub">Larger units (800–905 sq ft) fetch ₹23K–₹25K even unfurnished</div>
+  </div>
+</div>
+
+<hr class="divider">
+
+<p class="section-title">Best areas in this budget</p>
+
+<div class="area-card">
+  <h3>🥇 Kasarvadavali (Ghodbunder Road) — Best overall</h3>
+  <p>The sweet spot for ₹20K–₹25K. Large gated societies (Vihang Valley, Raunak Unnathi, Haware City) offer 600–900 sq ft carpet with modern amenities. 15–20 min to Thane station by auto/cab.</p>
+  <div class="pros-cons">
+    <div class="pc-box pro"><h4>Pros</h4><li>✓ Largest stock in this budget</li><li>✓ Modern gated townships</li><li>✓ Schools, hospitals, D'Mart close by</li><li>✓ Upcoming metro connectivity</li></div>
+    <div class="pc-box con"><h4>Trade-offs</h4><li>✗ 8–12 km from Thane station</li><li>✗ Ghodbunder Rd can get congested</li><li>✗ Auto availability at night limited</li></div>
+  </div>
+</div>
+<div class="area-card">
+  <h3>🥈 Owale (Ghodbunder Road) — Good value, quieter</h3>
+  <p>Slightly farther along Ghodbunder Rd, offers spacious flats (Vihang Hills, Cosmos Springs) at ₹20K–₹23K. More serene, fewer traffic bottlenecks than Kasarvadavali stretch.</p>
+  <div class="pros-cons">
+    <div class="pc-box pro"><h4>Pros</h4><li>✓ Larger carpet areas per rupee</li><li>✓ Calmer neighbourhood</li><li>✓ Good amenities in gated societies</li></div>
+    <div class="pc-box con"><h4>Trade-offs</h4><li>✗ More distant from Thane city centre</li><li>✗ Fewer dining/retail options</li></div>
+  </div>
+</div>
+<div class="area-card">
+  <h3>🥉 Ghodbunder Rd (near Viviana / Manpada) — Best connectivity</h3>
+  <p>Closer to Thane station (~3–5 km), near Viviana Mall and Jupiter Hospital. Rents are at the top end (₹22K–₹26K) but commute time is far shorter. Some standalone buildings at ₹20K available.</p>
+  <div class="pros-cons">
+    <div class="pc-box pro"><h4>Pros</h4><li>✓ Closest to Thane station</li><li>✓ Near Viviana Mall, Jupiter Hospital</li><li>✓ Good public transport</li></div>
+    <div class="pc-box con"><h4>Trade-offs</h4><li>✗ Higher demand → less negotiation room</li><li>✗ Older buildings; fewer amenities at ₹20K</li></div>
+  </div>
+</div>
+
+<hr class="divider">
+<p style="font-size:11px;color:var(--text-muted);padding-bottom:1rem">Data from NoBroker, 99acres, SquareYards, Nestoria, RealEstateIndia · June 2026 · Prices are indicative and subject to change. Always verify directly with the owner/agent. Deposit ranges are estimates based on market norms.</p>
