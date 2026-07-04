@@ -1,8 +1,9 @@
 <article
   class="listing-card"
+  [class.best-deal]="isBestDeal()"
   role="link"
   tabindex="0"
-  [attr.aria-label]="group().title + ', from ' + cheapest().priceDisplay + ' per month'"
+  [attr.aria-label]="group().title + ', from ' + cheapest().priceDisplay + ' per month' + (bestDealSubtext() ? ', best deal, ' + bestDealSubtext() : '')"
   (click)="openSource(cheapest().sourceUrl)"
   (keydown)="onCardKeydown($event)">
   <div class="photo">
@@ -15,7 +16,15 @@
 
   <div class="body">
     <div class="headline">
-      <h3 class="title">{{ group().title }}</h3>
+      <div class="title-line">
+        <h3 class="title">{{ group().title }}</h3>
+        @if (isBestDeal()) {
+          <span class="badge">Best deal</span>
+        }
+        @if (bestDealSubtext()) {
+          <span class="best-deal-subtext">{{ bestDealSubtext() }}</span>
+        }
+      </div>
       <div class="price">
         <span class="amount">{{ group().priceDisplay }}</span>
         <span class="caption">per month · from <span class="src">{{ cheapest().sourcePlatform }}</span></span>

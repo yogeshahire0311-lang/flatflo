@@ -14,6 +14,12 @@
   box-shadow: 0 1px 4px rgba(0, 0, 0, 0.06);
 }
 
+/* Best-deal accent (US3, FR-007): 2px accent border, kept on hover. */
+.listing-card.best-deal,
+.listing-card.best-deal:hover {
+  border: 2px solid #059669;
+}
+
 .listing-card:focus-visible {
   outline: 2px solid #2563eb;
   outline-offset: 2px;
@@ -56,11 +62,33 @@
   gap: 12px;
 }
 
+.title-line {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+}
+
 .title {
   margin: 0;
   font-size: 16px;
   font-weight: 600;
   color: #111827;
+}
+
+.badge {
+  padding: 2px 8px;
+  border-radius: 999px;
+  font-size: 11px;
+  font-weight: 600;
+  color: #065f46;
+  background: #d1fae5;
+}
+
+.best-deal-subtext {
+  font-size: 12px;
+  font-weight: 600;
+  color: #059669;
 }
 
 .price {

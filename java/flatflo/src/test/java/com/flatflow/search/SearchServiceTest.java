@@ -166,6 +166,34 @@ class SearchServiceTest {
     }
 
     @Test
+    void bestDealSortSurfacesBestDealsFirstThenDiscountDescThenPriceAsc() {
+        // Six distinct 2BHK groups in Goregaon East. Every raw listing contributes to the
+        // area average: (42+48+66+66+66+72)k / 6 = 60,000 -> best-deal threshold 54,000.
+        //   42k -> best deal, 30% below avg   |   48k -> best deal, 20% below avg
+        //   66k / 66k / 66k / 72k -> not best deals
+        List<Listing> listings = List.of(
+                listing("d1", "Alpha", "Goregaon East", BhkType.TWO_BHK, 66000, 600, "NoBroker"),
+                listing("d2", "Beta", "Goregaon East", BhkType.TWO_BHK, 48000, 600, "NoBroker"),
+                listing("d3", "Gamma", "Goregaon East", BhkType.TWO_BHK, 72000, 600, "NoBroker"),
+                listing("d4", "Delta", "Goregaon East", BhkType.TWO_BHK, 42000, 600, "NoBroker"),
+                listing("d5", "Epsilon", "Goregaon East", BhkType.TWO_BHK, 66000, 600, "NoBroker"),
+                listing("d6", "Zeta", "Goregaon East", BhkType.TWO_BHK, 66000, 600, "NoBroker"));
+
+        SearchResponseDto res = serviceFor(listings).search(query(BhkType.TWO_BHK));
+
+        // Best deals first (42k before 48k = higher discount first), then the rest by price asc.
+        assertThat(prices(res)).containsExactly(42000, 48000, 66000, 66000, 66000, 72000);
+
+        // The two leaders are flagged with the correct discount %; the rest are not best deals.
+        assertThat(res.results().get(0).isBestDeal()).isTrue();
+        assertThat(res.results().get(0).bestDealDiscountPct()).isEqualTo(30);
+        assertThat(res.results().get(1).isBestDeal()).isTrue();
+        assertThat(res.results().get(1).bestDealDiscountPct()).isEqualTo(20);
+        assertThat(res.results().get(2).isBestDeal()).isFalse();
+        assertThat(res.results().get(2).bestDealDiscountPct()).isNull();
+    }
+
+    @Test
     void formatsPriceAsInr() {
         assertThat(SearchService.inr(32000)).isEqualTo("₹32,000");
         assertThat(SearchService.inr(9000)).isEqualTo("₹9,000");

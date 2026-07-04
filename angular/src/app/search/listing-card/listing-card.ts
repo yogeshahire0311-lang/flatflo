@@ -9,7 +9,9 @@ import { ListingGroup, SourceOffer } from '../models';
  * cheapest source in a new tab (results view preserved); each source chip is an
  * independent link that opens its own source, overriding the card default.
  *
- * The best-deal badge (US3) and image fallback (Polish) are layered on later.
+ * US3 best deal: when the group is flagged {@link ListingGroup.isBestDeal}, the
+ * card shows a "Best deal" badge, a "{pct}% below area average" subtext, and a
+ * 2px accent border (FR-007). Nothing is shown otherwise.
  */
 @Component({
   selector: 'app-listing-card',
@@ -37,6 +39,15 @@ export class ListingCard {
 
   /** The cheapest source (offers are pre-sorted by price ascending) — the card default. */
   protected readonly cheapest = computed<SourceOffer>(() => this.group().sources[0]);
+
+  /** True when this group qualifies as a best deal (US3, FR-007). */
+  protected readonly isBestDeal = computed(() => this.group().isBestDeal);
+
+  /** "{pct}% below area average" subtext, shown only for best-deal groups. */
+  protected readonly bestDealSubtext = computed(() => {
+    const pct = this.group().bestDealDiscountPct;
+    return pct == null ? null : `${pct}% below area average`;
+  });
 
   /** Additional sources beyond the cheapest (shown in the "Also listed on" row). */
   protected readonly otherSources = computed(() => this.group().sources.slice(1));

@@ -11,12 +11,12 @@ description: "Task list for Unified Rental Search (FlatFlo MVP)"
 > | Setup (T001–T004) | ✅ done |
 > | Foundational (T005–T022) | ✅ done |
 > | US1 — search + grouped cards (T023–T032) | ✅ done |
-> | **US2 — redirect (T033–T036)** | ❌ **not started** — `listing-card` has no click/redirect or availability notice |
-> | **US3 — best-deal presentation (T037, T038, T040)** | ❌ **not started** — badge/subtext/border not rendered; only backend default sort T039 ✅ done |
+> | US2 — redirect (T033–T036) | ✅ done — card + chips redirect in new tab; availability notice shown |
+> | US3 — best-deal presentation (T037, T038, T040) | ✅ done — badge + "% below area average" subtext + 2px accent border render iff `isBestDeal`; default sort T039 ✅ done |
 > | US4 — filters + sort (T041–T047) | ✅ done, **except T045 Map-toggle** (deferred; furnishing selector, sticky bar, Filters badge done) |
-> | Polish (T048–T056) | ❌ not started (T050 has native lazy-load only; no `onerror` fallback yet) |
+> | Polish (T048–T056) | ⏳ mostly not started — **T050 image `onerror` fallback ✅ done**; a11y/copy/states/seams pending |
 >
-> **Recommended next:** US2 (T033–T036) then US3 presentation (T037/T038/T040) — these complete the MVP-critical card behavior before Phase 7 Polish.
+> **Recommended next:** Phase 7 Polish (T048–T056) — UI states, per-source status, a11y pass, copy pass, timeout/partial-source seam. Deferred: T045 Map-toggle, T053 mobile edit-search sheet.
 
 **Input**: Design documents from `specs/001-unified-rental-search/`
 
@@ -147,13 +147,13 @@ description: "Task list for Unified Rental Search (FlatFlo MVP)"
 
 ### Tests for User Story 3
 
-- [ ] T037 [P] [US3] Extend `SearchServiceTest` with BEST_DEAL sort ordering (best deals first, then discount desc / price asc) in `java/flatflo/src/test/java/com/flatflow/search/SearchServiceTest.java`
-- [ ] T038 [P] [US3] Component spec: best-deal badge + subtext + accent border render iff `isBestDeal`; hidden for boundary group in `angular/src/app/search/listing-card/`
+- [x] T037 [P] [US3] Extend `SearchServiceTest` with BEST_DEAL sort ordering (best deals first, then discount desc / price asc) in `java/flatflo/src/test/java/com/flatflow/search/SearchServiceTest.java`
+- [x] T038 [P] [US3] Component spec: best-deal badge + subtext + accent border render iff `isBestDeal`; hidden for boundary group in `angular/src/app/search/listing-card/`
 
 ### Implementation for User Story 3
 
 - [x] T039 [US3] Implement BEST_DEAL as the default sort in `SearchService` (best deals first, tiebreak by discount desc then price asc) in `java/flatflo/src/main/java/com/flatflow/search/SearchService.java` (satisfies T037)
-- [ ] T040 [US3] Render the best-deal badge, "{pct}% below area average" subtext, and 2px accent border in `listing-card` when `isBestDeal` is true (and nothing otherwise) in `angular/src/app/search/listing-card/` (satisfies T038)
+- [x] T040 [US3] Render the best-deal badge, "{pct}% below area average" subtext, and 2px accent border in `listing-card` when `isBestDeal` is true (and nothing otherwise) in `angular/src/app/search/listing-card/` (satisfies T038)
 
 **Checkpoint**: US1–US3 work — the differentiation (best-deal insight) is visible and drives default ordering.
 

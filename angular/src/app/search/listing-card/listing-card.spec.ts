@@ -133,6 +133,30 @@ describe('ListingCard', () => {
     expect(openSpy).not.toHaveBeenCalledWith('u-nb', '_blank', 'noopener');
   });
 
+  it('shows the best-deal badge, "% below area average" subtext, and accent border when isBestDeal (US3)', () => {
+    const el = render(group({ isBestDeal: true, bestDealDiscountPct: 14 }));
+
+    expect(el.querySelector('.badge')?.textContent).toContain('Best deal');
+    expect(el.querySelector('.best-deal-subtext')?.textContent).toContain('14% below area average');
+    // Accent border is applied via the best-deal class on the card.
+    expect((el.querySelector('.listing-card') as HTMLElement).classList).toContain('best-deal');
+  });
+
+  it('shows no badge, subtext, or accent border for a non-best-deal group (US3)', () => {
+    const el = render(group({ isBestDeal: false, bestDealDiscountPct: null }));
+
+    expect(el.querySelector('.badge')).toBeNull();
+    expect(el.querySelector('.best-deal-subtext')).toBeNull();
+    expect((el.querySelector('.listing-card') as HTMLElement).classList).not.toContain('best-deal');
+  });
+
+  it('conveys the best deal in the card accessible label as text (US3, FR-022)', () => {
+    const el = render(group({ isBestDeal: true, bestDealDiscountPct: 14 }));
+    const label = (el.querySelector('.listing-card') as HTMLElement).getAttribute('aria-label') ?? '';
+    expect(label).toContain('best deal');
+    expect(label).toContain('14% below area average');
+  });
+
   it('exposes the card as a keyboard-focusable link that activates on Enter (US2)', () => {
     const openSpy = spyOn(window, 'open');
     const el = render(group());
