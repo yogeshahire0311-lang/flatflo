@@ -4,6 +4,20 @@ description: "Task list for Unified Rental Search (FlatFlo MVP)"
 
 # Tasks: Unified Rental Search (FlatFlo MVP)
 
+> **Status — reconciled 2026-07-03** (39/56 tasks done)
+>
+> | Phase | State |
+> |---|---|
+> | Setup (T001–T004) | ✅ done |
+> | Foundational (T005–T022) | ✅ done |
+> | US1 — search + grouped cards (T023–T032) | ✅ done |
+> | **US2 — redirect (T033–T036)** | ❌ **not started** — `listing-card` has no click/redirect or availability notice |
+> | **US3 — best-deal presentation (T037, T038, T040)** | ❌ **not started** — badge/subtext/border not rendered; only backend default sort T039 ✅ done |
+> | US4 — filters + sort (T041–T047) | ✅ done, **except T045 Map-toggle** (deferred; furnishing selector, sticky bar, Filters badge done) |
+> | Polish (T048–T056) | ❌ not started (T050 has native lazy-load only; no `onerror` fallback yet) |
+>
+> **Recommended next:** US2 (T033–T036) then US3 presentation (T037/T038/T040) — these complete the MVP-critical card behavior before Phase 7 Polish.
+
 **Input**: Design documents from `specs/001-unified-rental-search/`
 
 **Prerequisites**: [plan.md](./plan.md), [spec.md](./spec.md), [research.md](./research.md), [data-model.md](./data-model.md), [contracts/search-api.md](./contracts/search-api.md), [quickstart.md](./quickstart.md)
@@ -28,10 +42,10 @@ description: "Task list for Unified Rental Search (FlatFlo MVP)"
 
 **Purpose**: Wire up the existing backend + frontend scaffolds for this feature.
 
-- [ ] T001 [P] Add HTTP + CORS/dev-proxy wiring: create `angular/proxy.conf.json` mapping `/api` → `http://localhost:8080`, and reference it from the `serve` target in `angular/angular.json`
-- [ ] T002 [P] Register `provideHttpClient()` in `angular/src/app/app.config.ts`
-- [ ] T003 [P] Add the `/search` route in `angular/src/app/app.routes.ts` (lazy-load the search page component created in Phase 2/US1)
-- [ ] T004 [P] Confirm backend JSON/Jackson support and add a package skeleton: create empty packages `com.flatflow.grouping` and `com.flatflow.search` (with `dto`) under `java/flatflo/src/main/java/com/flatflow/`
+- [x] T001 [P] Add HTTP + CORS/dev-proxy wiring: create `angular/proxy.conf.json` mapping `/api` → `http://localhost:8080`, and reference it from the `serve` target in `angular/angular.json`
+- [x] T002 [P] Register `provideHttpClient()` in `angular/src/app/app.config.ts`
+- [x] T003 [P] Add the `/search` route in `angular/src/app/app.routes.ts` (lazy-load the search page component created in Phase 2/US1)
+- [x] T004 [P] Confirm backend JSON/Jackson support and add a package skeleton: create empty packages `com.flatflow.grouping` and `com.flatflow.search` (with `dto`) under `java/flatflo/src/main/java/com/flatflow/`
 
 **Checkpoint**: Both apps build; frontend can reach the backend origin via proxy.
 
@@ -45,33 +59,33 @@ description: "Task list for Unified Rental Search (FlatFlo MVP)"
 
 ### Raw model + feed
 
-- [ ] T005 [P] Extend the raw `Listing` record with `photos: List<String>`, `floor: Integer`, `lastUpdated: String`, `lat: double`, `lng: double` in `java/flatflo/src/main/java/com/flatflow/listing/Listing.java` (per data-model.md D5)
-- [ ] T006 [P] Create `SupportedArea` (id + display name; e.g., GOREGAON_EAST, MALAD_WEST, THANE) in `java/flatflo/src/main/java/com/flatflow/listing/SupportedArea.java`
-- [ ] T007 Author the seeded feed `java/flatflo/src/main/resources/listings-seed.json` exercising: same flat on ≥2 sources (identical dedup-key fields), a best-deal flat (cheapest ≥10% below area avg), a boundary flat (just <10%), a single-source flat, and a flat with empty/broken photos (per quickstart Prerequisites)
-- [ ] T008 [P] Define `ListingSource` interface (return raw `List<Listing>`) in `java/flatflo/src/main/java/com/flatflow/listing/ListingSource.java`
-- [ ] T009 Implement `SeededListingSource` loading `listings-seed.json` into memory at startup in `java/flatflo/src/main/java/com/flatflow/listing/SeededListingSource.java` (depends on T005, T007, T008)
+- [x] T005 [P] Extend the raw `Listing` record with `photos: List<String>`, `floor: Integer`, `lastUpdated: String`, `lat: double`, `lng: double` in `java/flatflo/src/main/java/com/flatflow/listing/Listing.java` (per data-model.md D5)
+- [x] T006 [P] Create `SupportedArea` (id + display name; e.g., GOREGAON_EAST, MALAD_WEST, THANE) in `java/flatflo/src/main/java/com/flatflow/listing/SupportedArea.java`
+- [x] T007 Author the seeded feed `java/flatflo/src/main/resources/listings-seed.json` exercising: same flat on ≥2 sources (identical dedup-key fields), a best-deal flat (cheapest ≥10% below area avg), a boundary flat (just <10%), a single-source flat, and a flat with empty/broken photos (per quickstart Prerequisites)
+- [x] T008 [P] Define `ListingSource` interface (return raw `List<Listing>`) in `java/flatflo/src/main/java/com/flatflow/listing/ListingSource.java`
+- [x] T009 Implement `SeededListingSource` loading `listings-seed.json` into memory at startup in `java/flatflo/src/main/java/com/flatflow/listing/SeededListingSource.java` (depends on T005, T007, T008)
 
 ### Grouping pipeline (dedup + area-average + best-deal)
 
-- [ ] T010 [P] Create `SourceOffer` type (sourcePlatform, sourceUrl, price, lastUpdated) in `java/flatflo/src/main/java/com/flatflow/grouping/SourceOffer.java`
-- [ ] T011 [P] Create `ListingGroup` type (groupId, title, locality, area, bhk, furnishing, floor, lat/lng, offers, cheapestPrice, areaAveragePrice, isBestDeal, bestDealDiscountPct, primaryPhoto, newestUpdated) in `java/flatflo/src/main/java/com/flatflow/grouping/ListingGroup.java`
-- [ ] T012 [P] Define `ListingGrouper` interface (`List<Listing>` → `List<ListingGroup>`) in `java/flatflo/src/main/java/com/flatflow/grouping/ListingGrouper.java`
-- [ ] T013 [P] Implement `AreaAverageCalculator` (mean rent per locality+BHK across the feed) in `java/flatflo/src/main/java/com/flatflow/grouping/AreaAverageCalculator.java`
-- [ ] T014 [P] Unit test the grouping pipeline (dedup key merges same flat; area-average correct; best-deal at exactly 10% boundary and just-below; discount % rounding) in `java/flatflo/src/test/java/com/flatflow/grouping/SeedListingGrouperTest.java`
-- [ ] T015 Implement `SeedListingGrouper` (dedup key over normalized locality+bhk+area-bucket+society/title; build offers sorted by price; compute cheapest, area avg via T013, 10% best-deal flag, primary photo) in `java/flatflo/src/main/java/com/flatflow/grouping/SeedListingGrouper.java` (depends on T010–T013; satisfies T014)
+- [x] T010 [P] Create `SourceOffer` type (sourcePlatform, sourceUrl, price, lastUpdated) in `java/flatflo/src/main/java/com/flatflow/grouping/SourceOffer.java`
+- [x] T011 [P] Create `ListingGroup` type (groupId, title, locality, area, bhk, furnishing, floor, lat/lng, offers, cheapestPrice, areaAveragePrice, isBestDeal, bestDealDiscountPct, primaryPhoto, newestUpdated) in `java/flatflo/src/main/java/com/flatflow/grouping/ListingGroup.java`
+- [x] T012 [P] Define `ListingGrouper` interface (`List<Listing>` → `List<ListingGroup>`) in `java/flatflo/src/main/java/com/flatflow/grouping/ListingGrouper.java`
+- [x] T013 [P] Implement `AreaAverageCalculator` (mean rent per locality+BHK across the feed) in `java/flatflo/src/main/java/com/flatflow/grouping/AreaAverageCalculator.java`
+- [x] T014 [P] Unit test the grouping pipeline (dedup key merges same flat; area-average correct; best-deal at exactly 10% boundary and just-below; discount % rounding) in `java/flatflo/src/test/java/com/flatflow/grouping/SeedListingGrouperTest.java`
+- [x] T015 Implement `SeedListingGrouper` (dedup key over normalized locality+bhk+area-bucket+society/title; build offers sorted by price; compute cheapest, area avg via T013, 10% best-deal flag, primary photo) in `java/flatflo/src/main/java/com/flatflow/grouping/SeedListingGrouper.java` (depends on T010–T013; satisfies T014)
 
 ### Query + DTO scaffolding
 
-- [ ] T016 [P] Create `SortMode` enum (BEST_DEAL default, PRICE_ASC, PRICE_DESC, NEWEST) in `java/flatflo/src/main/java/com/flatflow/search/SortMode.java`
-- [ ] T017 [P] Create `SearchQuery` (location, budgetMin?, budgetMax?, bhk, furnishing?, sort, page) in `java/flatflo/src/main/java/com/flatflow/search/SearchQuery.java`
-- [ ] T018 [P] Create boundary DTOs `AreaDto`, `SourceOfferDto`, `SourceStatusDto` in `java/flatflo/src/main/java/com/flatflow/search/dto/`
-- [ ] T019 [P] Create `ListingGroupDto` (incl. `newestUpdated` so the NEWEST sort has a field to order by — FR-009) and `SearchResponseDto` (results, count, dupCount, sort, page, pageSize, hasMore, sources) in `java/flatflo/src/main/java/com/flatflow/search/dto/`
+- [x] T016 [P] Create `SortMode` enum (BEST_DEAL default, PRICE_ASC, PRICE_DESC, NEWEST) in `java/flatflo/src/main/java/com/flatflow/search/SortMode.java`
+- [x] T017 [P] Create `SearchQuery` (location, budgetMin?, budgetMax?, bhk, furnishing?, sort, page) in `java/flatflo/src/main/java/com/flatflow/search/SearchQuery.java`
+- [x] T018 [P] Create boundary DTOs `AreaDto`, `SourceOfferDto`, `SourceStatusDto` in `java/flatflo/src/main/java/com/flatflow/search/dto/`
+- [x] T019 [P] Create `ListingGroupDto` (incl. `newestUpdated` so the NEWEST sort has a field to order by — FR-009) and `SearchResponseDto` (results, count, dupCount, sort, page, pageSize, hasMore, sources) in `java/flatflo/src/main/java/com/flatflow/search/dto/`
 
 ### Frontend foundation
 
-- [ ] T020 [P] Create typed models (`ListingGroup`, `SourceOffer`, `SearchResponse`, `Area`, `SortMode`) in `angular/src/app/search/models.ts` (mirror contracts/search-api.md)
-- [ ] T021 Create `SearchService` with `getAreas()` and `search(query)` calling `/api/areas` and `/api/search` in `angular/src/app/search/search.service.ts` (depends on T020)
-- [ ] T022 Create the `search-page` container shell (loads areas, holds query state, renders child slots) in `angular/src/app/search/search-page/` (depends on T021)
+- [x] T020 [P] Create typed models (`ListingGroup`, `SourceOffer`, `SearchResponse`, `Area`, `SortMode`) in `angular/src/app/search/models.ts` (mirror contracts/search-api.md)
+- [x] T021 Create `SearchService` with `getAreas()` and `search(query)` calling `/api/areas` and `/api/search` in `angular/src/app/search/search.service.ts` (depends on T020)
+- [x] T022 Create the `search-page` container shell (loads areas, holds query state, renders child slots) in `angular/src/app/search/search-page/` (depends on T021)
 
 **Checkpoint**: Feed loads, groups compute (tests green), API/DTO types exist, and the frontend shell can call the backend. User stories can now begin.
 
@@ -85,19 +99,19 @@ description: "Task list for Unified Rental Search (FlatFlo MVP)"
 
 ### Tests for User Story 1
 
-- [ ] T023 [P] [US1] Unit test `SearchService` filter-by-location/BHK + dupCount computation + pagination (~20 groups) in `java/flatflo/src/test/java/com/flatflow/search/SearchServiceTest.java`
-- [ ] T024 [P] [US1] `@WebMvcTest` contract test for `GET /api/areas` and `GET /api/search` happy path (grouped shape, count/dupCount, pageSize, empty state) in `java/flatflo/src/test/java/com/flatflow/search/SearchControllerTest.java`
+- [x] T023 [P] [US1] Unit test `SearchService` filter-by-location/BHK + dupCount computation + pagination (~20 groups) in `java/flatflo/src/test/java/com/flatflow/search/SearchServiceTest.java`
+- [x] T024 [P] [US1] `@WebMvcTest` contract test for `GET /api/areas` and `GET /api/search` happy path (grouped shape, count/dupCount, pageSize, empty state) in `java/flatflo/src/test/java/com/flatflow/search/SearchControllerTest.java`
 
 ### Implementation for User Story 1
 
-- [ ] T025 [US1] Implement `SearchService` — take grouped listings from `ListingGrouper`, filter by location + BHK, paginate ~20 groups, compute `count` and `dupCount` in `java/flatflo/src/main/java/com/flatflow/search/SearchService.java` (depends on T015, T017; satisfies T023)
-- [ ] T026 [US1] Implement `SearchController` `GET /api/areas` (from `SupportedArea`) and `GET /api/search` (map groups → `SearchResponseDto`, include per-source status). Apply consistent unit formatting at the DTO boundary — INR price display (`priceDisplay`), sq-ft area in `metaLine`, and rent captioned "per month" (FR-019) — in `java/flatflo/src/main/java/com/flatflow/search/SearchController.java` (depends on T025, T018, T019; satisfies T024)
-- [ ] T027 [US1] Add input validation + error handling (400 on invalid location/bhk/budget, 200 empty state) via `@ControllerAdvice` in `java/flatflo/src/main/java/com/flatflow/search/` (per contracts)
-- [ ] T028 [P] [US1] Build the `filter-bar` component with location picker (from `/api/areas`), budget range, and BHK selector; emit query changes in `angular/src/app/search/filter-bar/`
-- [ ] T029 [P] [US1] Build the `results-meta` component ("{count} flats found, {dupCount} duplicates merged" + sort label) in `angular/src/app/search/results-meta/`
-- [ ] T030 [P] [US1] Build the `listing-card` component rendering grouped card: photo, title, meta line, cheapest price + "per month", and source chips row in `angular/src/app/search/listing-card/`
-- [ ] T031 [US1] Wire `search-page` to run a search on submit and render meta line + card list from `SearchService`; reflect query in URL params in `angular/src/app/search/search-page/` (depends on T022, T028, T029, T030)
-- [ ] T032 [P] [US1] Component spec for `listing-card` (single vs multi-source chip rendering) and `search-page` (renders results + meta) in `angular/src/app/search/` (Jasmine/Karma)
+- [x] T025 [US1] Implement `SearchService` — take grouped listings from `ListingGrouper`, filter by location + BHK, paginate ~20 groups, compute `count` and `dupCount` in `java/flatflo/src/main/java/com/flatflow/search/SearchService.java` (depends on T015, T017; satisfies T023)
+- [x] T026 [US1] Implement `SearchController` `GET /api/areas` (from `SupportedArea`) and `GET /api/search` (map groups → `SearchResponseDto`, include per-source status). Apply consistent unit formatting at the DTO boundary — INR price display (`priceDisplay`), sq-ft area in `metaLine`, and rent captioned "per month" (FR-019) — in `java/flatflo/src/main/java/com/flatflow/search/SearchController.java` (depends on T025, T018, T019; satisfies T024)
+- [x] T027 [US1] Add input validation + error handling (400 on invalid location/bhk/budget, 200 empty state) via `@ControllerAdvice` in `java/flatflo/src/main/java/com/flatflow/search/` (per contracts)
+- [x] T028 [P] [US1] Build the `filter-bar` component with location picker (from `/api/areas`), budget range, and BHK selector; emit query changes in `angular/src/app/search/filter-bar/`
+- [x] T029 [P] [US1] Build the `results-meta` component ("{count} flats found, {dupCount} duplicates merged" + sort label) in `angular/src/app/search/results-meta/`
+- [x] T030 [P] [US1] Build the `listing-card` component rendering grouped card: photo, title, meta line, cheapest price + "per month", and source chips row in `angular/src/app/search/listing-card/`
+- [x] T031 [US1] Wire `search-page` to run a search on submit and render meta line + card list from `SearchService`; reflect query in URL params in `angular/src/app/search/search-page/` (depends on T022, T028, T029, T030)
+- [x] T032 [P] [US1] Component spec for `listing-card` (single vs multi-source chip rendering) and `search-page` (renders results + meta) in `angular/src/app/search/` (Jasmine/Karma)
 
 **Checkpoint**: US1 fully functional — unified, de-duplicated search with grouped cards and dedup meta line. This is the demoable MVP.
 
@@ -138,7 +152,7 @@ description: "Task list for Unified Rental Search (FlatFlo MVP)"
 
 ### Implementation for User Story 3
 
-- [ ] T039 [US3] Implement BEST_DEAL as the default sort in `SearchService` (best deals first, tiebreak by discount desc then price asc) in `java/flatflo/src/main/java/com/flatflow/search/SearchService.java` (satisfies T037)
+- [x] T039 [US3] Implement BEST_DEAL as the default sort in `SearchService` (best deals first, tiebreak by discount desc then price asc) in `java/flatflo/src/main/java/com/flatflow/search/SearchService.java` (satisfies T037)
 - [ ] T040 [US3] Render the best-deal badge, "{pct}% below area average" subtext, and 2px accent border in `listing-card` when `isBestDeal` is true (and nothing otherwise) in `angular/src/app/search/listing-card/` (satisfies T038)
 
 **Checkpoint**: US1–US3 work — the differentiation (best-deal insight) is visible and drives default ordering.
@@ -153,16 +167,16 @@ description: "Task list for Unified Rental Search (FlatFlo MVP)"
 
 ### Tests for User Story 4
 
-- [ ] T041 [P] [US4] Extend `SearchServiceTest` with budget-range filter, furnishing filter, and PRICE_ASC/PRICE_DESC/NEWEST sort ordering in `java/flatflo/src/test/java/com/flatflow/search/SearchServiceTest.java`
-- [ ] T042 [P] [US4] `@WebMvcTest` cases for `sort` param (all modes) and budget-range/furnishing filters, incl. 400 on `budgetMin > budgetMax` in `java/flatflo/src/test/java/com/flatflow/search/SearchControllerTest.java`
+- [x] T041 [P] [US4] Extend `SearchServiceTest` with budget-range filter, furnishing filter, and PRICE_ASC/PRICE_DESC/NEWEST sort ordering in `java/flatflo/src/test/java/com/flatflow/search/SearchServiceTest.java`
+- [x] T042 [P] [US4] `@WebMvcTest` cases for `sort` param (all modes) and budget-range/furnishing filters, incl. 400 on `budgetMin > budgetMax` in `java/flatflo/src/test/java/com/flatflow/search/SearchControllerTest.java`
 
 ### Implementation for User Story 4
 
-- [ ] T043 [US4] Add budget-range + furnishing filtering and PRICE_ASC/PRICE_DESC/NEWEST sorting to `SearchService` in `java/flatflo/src/main/java/com/flatflow/search/SearchService.java` (satisfies T041)
-- [ ] T044 [US4] Accept/validate `budgetMin`, `budgetMax`, `furnishing`, `sort` params in `SearchController` (400 on invalid combos) in `java/flatflo/src/main/java/com/flatflow/search/SearchController.java` (satisfies T042)
-- [ ] T045 [US4] Make the filter bar sticky; add furnishing selector, a "Filters" control showing active non-default filter count as a badge, and a "Map" toggle entry point in `angular/src/app/search/filter-bar/` (FR-010, FR-014)
-- [ ] T046 [US4] Add a sort control to `results-meta` and wire sort/filter changes to re-query without full reload, syncing all query params to the URL in `angular/src/app/search/search-page/` (depends on T045)
-- [ ] T047 [P] [US4] Component spec: active-filter count badge, clear-filters restores set, sort switch re-queries, URL params update in `angular/src/app/search/`
+- [x] T043 [US4] Add budget-range + furnishing filtering and PRICE_ASC/PRICE_DESC/NEWEST sorting to `SearchService` in `java/flatflo/src/main/java/com/flatflow/search/SearchService.java` (satisfies T041)
+- [x] T044 [US4] Accept/validate `budgetMin`, `budgetMax`, `furnishing`, `sort` params in `SearchController` (400 on invalid combos) in `java/flatflo/src/main/java/com/flatflow/search/SearchController.java` (satisfies T042)
+- [ ] T045 [US4] Make the filter bar sticky; add furnishing selector, a "Filters" control showing active non-default filter count as a badge, and a "Map" toggle entry point in `angular/src/app/search/filter-bar/` (FR-010, FR-014) — **PARTIAL: sticky + furnishing selector + Filters badge done; Map toggle deferred**
+- [x] T046 [US4] Add a sort control to `results-meta` and wire sort/filter changes to re-query without full reload, syncing all query params to the URL in `angular/src/app/search/search-page/` (depends on T045)
+- [x] T047 [P] [US4] Component spec: active-filter count badge, clear-filters restores set, sort switch re-queries, URL params update in `angular/src/app/search/`
 
 **Checkpoint**: All four user stories independently functional.
 
@@ -174,7 +188,7 @@ description: "Task list for Unified Rental Search (FlatFlo MVP)"
 
 - [ ] T048 [P] Implement UI states in `angular/src/app/search/ui-states/`: skeleton/loading (3–5 cards, filter bar not blocked), empty ("No flats match these filters" + widen suggestion), and full-width error + retry (all sources down) — FR-015, FR-016, FR-017
 - [ ] T049 [P] Add per-source status handling: surface "Results from N of M sources" in `results-meta` on partial failure; treat `503 ALL_SOURCES_UNAVAILABLE` as the error state in `angular/src/app/search/search-page/` (FR-017)
-- [ ] T050 [P] Image handling in `listing-card`: native lazy-load + `onerror` fallback to a category-icon placeholder (never broken-image) in `angular/src/app/search/listing-card/` (FR-018)
+- [ ] T050 [P] Image handling in `listing-card`: native lazy-load + `onerror` fallback to a category-icon placeholder (never broken-image) in `angular/src/app/search/listing-card/` (FR-018) — **PARTIAL: native lazy-load + null-URL placeholder done; `onerror` fallback for broken loads not yet**
 - [ ] T051 [P] Accessibility pass: card focus ring + keyboard activation, per-chip focus stop with accessible label ("View this listing on {source}, ₹{price} per month"), best-deal conveyed via text in `angular/src/app/search/listing-card/` (FR-022)
 - [ ] T052 [P] Apply reference copy (sentence case; no exclamation/"successfully"/"please") across meta line, badge/subtext, chip prefix, empty state, price caption in `angular/src/app/search/` (FR-023)
 - [ ] T053 [P] Mobile: collapse filter-bar fields into a single "Edit search" summary opening a full-screen sheet in `angular/src/app/search/filter-bar/` (UI spec §4)
