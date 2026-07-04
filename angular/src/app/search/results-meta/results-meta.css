@@ -7,9 +7,21 @@
   color: #6b7280;
 }
 
+.left {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 4px 12px;
+}
+
 .summary {
   font-weight: 600;
   color: #374151;
+}
+
+.coverage {
+  font-size: 12px;
+  color: #b45309;
 }
 
 .sort select {

@@ -1,0 +1,36 @@
+.error {
+  padding: 48px 16px;
+  text-align: center;
+  color: #6b7280;
+}
+
+.error h2 {
+  margin: 0 0 8px;
+  font-size: 18px;
+  color: #374151;
+}
+
+.message {
+  margin: 0 0 20px;
+}
+
+.retry {
+  padding: 8px 20px;
+  border: 1px solid #2563eb;
+  border-radius: 6px;
+  background: #2563eb;
+  color: #fff;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.retry:hover {
+  background: #1d4ed8;
+  border-color: #1d4ed8;
+}
+
+.retry:focus-visible {
+  outline: 2px solid #2563eb;
+  outline-offset: 2px;
+}

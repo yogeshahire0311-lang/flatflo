@@ -64,4 +64,41 @@ describe('FilterBar', () => {
 
     expect(el.querySelector('.filter-badge')?.textContent).toContain('2');
   });
+
+  it('opens and closes the mobile edit-search sheet (UI spec §4)', () => {
+    const fixture = render();
+    const el = fixture.nativeElement as HTMLElement;
+    const form = el.querySelector('form.filter-bar') as HTMLElement;
+
+    // Collapsed by default: an "Edit search" control is present and the sheet is closed.
+    expect(el.querySelector('.edit-search')).not.toBeNull();
+    expect(form.classList).not.toContain('sheet-open');
+
+    (el.querySelector('.edit-search') as HTMLButtonElement).click();
+    fixture.detectChanges();
+    expect(form.classList).toContain('sheet-open');
+
+    (el.querySelector('.sheet-close') as HTMLButtonElement).click();
+    fixture.detectChanges();
+    expect(form.classList).not.toContain('sheet-open');
+  });
+
+  it('dismisses the sheet after a successful search from it', () => {
+    const fixture = render();
+    const el = fixture.nativeElement as HTMLElement;
+    const form = el.querySelector('form.filter-bar') as HTMLElement;
+
+    (el.querySelector('.edit-search') as HTMLButtonElement).click();
+    const location = el.querySelector('select') as HTMLSelectElement;
+    location.value = 'GOREGAON_EAST';
+    location.dispatchEvent(new Event('change'));
+    fixture.detectChanges();
+    expect(form.classList).toContain('sheet-open');
+
+    (el.querySelector('form') as HTMLFormElement).dispatchEvent(new Event('submit'));
+    fixture.detectChanges();
+
+    // Submitting closes the sheet.
+    expect(form.classList).not.toContain('sheet-open');
+  });
 });

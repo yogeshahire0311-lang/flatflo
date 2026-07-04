@@ -1,0 +1,13 @@
+<div class="skeleton" role="status">
+  <span class="sr-only">Searching…</span>
+  @for (i of placeholders(); track i) {
+    <div class="skeleton-card" aria-hidden="true">
+      <div class="s-photo"></div>
+      <div class="s-body">
+        <div class="s-bar s-title"></div>
+        <div class="s-bar s-meta"></div>
+        <div class="s-bar s-sources"></div>
+      </div>
+    </div>
+  }
+</div>

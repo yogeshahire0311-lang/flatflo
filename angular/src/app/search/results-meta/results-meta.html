@@ -1,5 +1,10 @@
 <div class="results-meta">
-  <span class="summary">{{ summary() }}</span>
+  <span class="left">
+    <span class="summary">{{ summary() }}</span>
+    @if (coverage(); as c) {
+      <span class="coverage">{{ c }}</span>
+    }
+  </span>
   <label class="sort">
     <span class="sr-only">Sort results</span>
     <select (change)="onSort($any($event.target).value)">

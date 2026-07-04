@@ -5,12 +5,15 @@
     (search)="onSearch($event)" />
 
   @if (loading()) {
-    <p class="status">Searching…</p>
+    <app-skeleton-state [count]="4" />
+  } @else if (error(); as e) {
+    <app-error-state [message]="e.message" (retry)="onRetry()" />
   } @else if (response(); as res) {
     <app-results-meta
       [count]="res.count"
       [dupCount]="res.dupCount"
       [sort]="res.sort"
+      [sources]="res.sources"
       (sortChange)="onSortChange($event)" />
 
     @if (res.results.length > 0) {
@@ -19,12 +22,7 @@
         <app-listing-card [group]="group" />
       }
     } @else {
-      <div class="empty">
-        <h2>No flats match these filters</h2>
-        <p>Try widening your budget or BHK range.</p>
-      </div>
+      <app-empty-state />
     }
-  } @else if (searched()) {
-    <p class="status">Something went wrong. Please try again.</p>
   }
 </section>

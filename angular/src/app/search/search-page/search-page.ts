@@ -1,3 +1,4 @@
+import { HttpErrorResponse } from '@angular/common/http';
 import { Component, inject, signal } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { SearchService } from '../search.service';
@@ -5,6 +6,9 @@ import { Area, Bhk, Furnishing, SearchCriteria, SearchResponse, SortMode } from 
 import { FilterBar } from '../filter-bar/filter-bar';
 import { ResultsMeta } from '../results-meta/results-meta';
 import { ListingCard } from '../listing-card/listing-card';
+import { SkeletonState } from '../ui-states/skeleton-state/skeleton-state';
+import { EmptyState } from '../ui-states/empty-state/empty-state';
+import { ErrorState } from '../ui-states/error-state/error-state';
 
 /**
  * Container for the results screen (US1). Loads supported areas for the picker,
@@ -14,7 +18,7 @@ import { ListingCard } from '../listing-card/listing-card';
 @Component({
   selector: 'app-search-page',
   standalone: true,
-  imports: [FilterBar, ResultsMeta, ListingCard],
+  imports: [FilterBar, ResultsMeta, ListingCard, SkeletonState, EmptyState, ErrorState],
   templateUrl: './search-page.html',
   styleUrl: './search-page.css',
 })
@@ -26,8 +30,12 @@ export class SearchPage {
   protected readonly areas = signal<Area[]>([]);
   protected readonly response = signal<SearchResponse | null>(null);
   protected readonly loading = signal(false);
-  protected readonly searched = signal(false);
+  /** Non-null when the last request failed (e.g. all sources down); drives the error state. */
+  protected readonly error = signal<{ message: string } | null>(null);
   protected readonly criteria = signal<SearchCriteria | null>(null);
+
+  /** Default copy for a non-503 failure (sentence case, no "please" — FR-023). */
+  private static readonly GENERIC_ERROR = 'Something went wrong — try again.';
 
   constructor() {
     this.searchService.getAreas().subscribe((res) => this.areas.set(res.areas));
@@ -62,10 +70,18 @@ export class SearchPage {
     this.runSearch({ ...current, sort, page: 0 });
   }
 
+  /** Retry the last search after an error (re-runs the stored criteria). */
+  protected onRetry(): void {
+    const current = this.criteria();
+    if (current) {
+      this.runSearch(current);
+    }
+  }
+
   private runSearch(criteria: SearchCriteria): void {
     this.criteria.set(criteria);
     this.loading.set(true);
-    this.searched.set(true);
+    this.error.set(null);
 
     this.router.navigate([], {
       relativeTo: this.route,
@@ -86,10 +102,22 @@ export class SearchPage {
         this.response.set(res);
         this.loading.set(false);
       },
-      error: () => {
+      error: (err: HttpErrorResponse) => {
         this.response.set(null);
+        this.error.set({ message: this.errorMessage(err) });
         this.loading.set(false);
       },
     });
+  }
+
+  /**
+   * A 503 with the ALL_SOURCES_UNAVAILABLE code carries a user-facing message we
+   * surface verbatim; any other failure falls back to generic copy.
+   */
+  private errorMessage(err: HttpErrorResponse): string {
+    if (err.status === 503 && err.error?.error === 'ALL_SOURCES_UNAVAILABLE') {
+      return err.error?.message ?? SearchPage.GENERIC_ERROR;
+    }
+    return SearchPage.GENERIC_ERROR;
   }
 }

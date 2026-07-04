@@ -1,6 +1,7 @@
+import { HttpErrorResponse } from '@angular/common/http';
 import { TestBed } from '@angular/core/testing';
 import { ActivatedRoute, Router } from '@angular/router';
-import { of } from 'rxjs';
+import { of, throwError } from 'rxjs';
 import { SearchPage } from './search-page';
 import { SearchService } from '../search.service';
 import { SearchCriteria, SearchResponse } from '../models';
@@ -36,14 +37,21 @@ class SearchServiceStub {
     hasMore: false,
     sources: [{ sourcePlatform: 'SeedFeed', reachable: true }],
   };
+  /** When set, search() errors with this instead of returning results. */
+  error: unknown | null = null;
   getAreas() {
     return of(this.areas);
   }
   search(criteria: SearchCriteria) {
     this.calls.push(criteria);
-    return of(this.response);
+    return this.error ? throwError(() => this.error) : of(this.response);
   }
 }
+
+const CRITERIA: SearchCriteria = {
+  location: 'GOREGAON_EAST', bhk: 'TWO_BHK', budgetMin: null, budgetMax: null,
+  furnishing: null, sort: 'BEST_DEAL', page: 0,
+};
 
 describe('SearchPage', () => {
   beforeEach(async () => {
@@ -94,7 +102,81 @@ describe('SearchPage', () => {
     fixture.detectChanges();
 
     const el = fixture.nativeElement as HTMLElement;
-    expect(el.querySelector('.empty h2')?.textContent).toContain('No flats match these filters');
+    expect(el.querySelector('app-empty-state')).not.toBeNull();
+    expect(el.querySelector('app-error-state')).toBeNull();
+  });
+
+  it('shows a skeleton while loading, without removing the filter bar (FR-015)', () => {
+    const fixture = TestBed.createComponent(SearchPage);
+    const page = fixture.componentInstance as unknown as { loading: { set: (v: boolean) => void } };
+    fixture.detectChanges();
+
+    // Force the loading state (a real request resolves synchronously in the stub).
+    page.loading.set(true);
+    fixture.detectChanges();
+
+    const el = fixture.nativeElement as HTMLElement;
+    expect(el.querySelector('app-skeleton-state')).not.toBeNull();
+    expect(el.querySelector('app-filter-bar')).not.toBeNull();
+  });
+
+  it('shows the error state (with the server message) on a 503 all-sources-down, not the empty state', () => {
+    const fixture = TestBed.createComponent(SearchPage);
+    const svc = TestBed.inject(SearchService) as unknown as SearchServiceStub;
+    svc.error = new HttpErrorResponse({
+      status: 503,
+      error: { error: 'ALL_SOURCES_UNAVAILABLE', message: 'No listing sources could be reached.' },
+    });
+
+    const page = fixture.componentInstance as unknown as { onSearch: (c: SearchCriteria) => void };
+    fixture.detectChanges();
+    page.onSearch(CRITERIA);
+    fixture.detectChanges();
+
+    const el = fixture.nativeElement as HTMLElement;
+    expect(el.querySelector('app-error-state')).not.toBeNull();
+    expect(el.querySelector('app-empty-state')).toBeNull();
+    expect(el.querySelector('app-error-state .message')?.textContent).toContain('No listing sources could be reached');
+  });
+
+  it('shows generic error copy for a non-503 failure', () => {
+    const fixture = TestBed.createComponent(SearchPage);
+    const svc = TestBed.inject(SearchService) as unknown as SearchServiceStub;
+    svc.error = new HttpErrorResponse({ status: 500 });
+
+    const page = fixture.componentInstance as unknown as { onSearch: (c: SearchCriteria) => void };
+    fixture.detectChanges();
+    page.onSearch(CRITERIA);
+    fixture.detectChanges();
+
+    const el = fixture.nativeElement as HTMLElement;
+    expect(el.querySelector('app-error-state')).not.toBeNull();
+    expect(el.querySelector('app-error-state .message')?.textContent).toContain('Something went wrong');
+  });
+
+  it('retry re-runs the last search (and recovers once the error clears)', () => {
+    const fixture = TestBed.createComponent(SearchPage);
+    const svc = TestBed.inject(SearchService) as unknown as SearchServiceStub;
+    svc.error = new HttpErrorResponse({ status: 500 });
+
+    const page = fixture.componentInstance as unknown as {
+      onSearch: (c: SearchCriteria) => void;
+      onRetry: () => void;
+    };
+    fixture.detectChanges();
+    page.onSearch({ ...CRITERIA, page: 3 });
+    fixture.detectChanges();
+
+    svc.error = null; // source recovers
+    page.onRetry();
+    fixture.detectChanges();
+
+    // The retry re-issued the last criteria verbatim (same page), and results now render.
+    expect(svc.calls.length).toBe(2);
+    expect(svc.calls[1].page).toBe(3);
+    const el = fixture.nativeElement as HTMLElement;
+    expect(el.querySelector('app-error-state')).toBeNull();
+    expect(el.querySelectorAll('app-listing-card').length).toBe(1);
   });
 
   it('re-queries with the new sort when the sort control changes (page reset)', () => {

@@ -1,4 +1,16 @@
-<form class="filter-bar" (ngSubmit)="submit()">
+<!-- Mobile summary: collapses the whole search into one row that opens the sheet. -->
+<div class="filter-summary">
+  <span class="summary-text">{{ summary() }}</span>
+  <button type="button" class="edit-search" (click)="openSheet()">Edit search</button>
+</div>
+
+<form class="filter-bar" [class.sheet-open]="sheetOpen()" (ngSubmit)="submit()">
+  <!-- Sheet header (mobile only): title + close. -->
+  <div class="sheet-header">
+    <span class="sheet-title">Edit search</span>
+    <button type="button" class="sheet-close" aria-label="Close search" (click)="closeSheet()">✕</button>
+  </div>
+
   <label class="field">
     <span>Location</span>
     <select (change)="onLocation($any($event.target).value)" required>

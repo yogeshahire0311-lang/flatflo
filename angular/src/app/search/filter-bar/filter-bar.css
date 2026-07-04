@@ -11,6 +11,12 @@
   border-bottom: 1px solid #e5e7eb;
 }
 
+/* The mobile summary and sheet chrome are desktop-hidden; the bar is always inline. */
+.filter-summary,
+.sheet-header {
+  display: none;
+}
+
 .field {
   display: flex;
   flex-direction: column;
@@ -51,4 +57,91 @@
 .search-btn:disabled {
   background: #9ca3af;
   cursor: not-allowed;
+}
+
+/* Mobile: collapse the fields into an "Edit search" summary that opens a
+   full-screen sheet (UI spec §4). */
+@media (max-width: 640px) {
+  .filter-summary {
+    position: sticky;
+    top: 0;
+    z-index: 10;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 12px;
+    padding: 12px;
+    background: #fff;
+    border-bottom: 1px solid #e5e7eb;
+  }
+
+  .summary-text {
+    font-size: 14px;
+    font-weight: 600;
+    color: #374151;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .edit-search {
+    flex: 0 0 auto;
+    padding: 8px 14px;
+    border: 1px solid #2563eb;
+    border-radius: 6px;
+    background: #fff;
+    color: #1d4ed8;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+  }
+
+  /* The inline bar is hidden until the sheet is opened. */
+  .filter-bar {
+    display: none;
+  }
+
+  .filter-bar.sheet-open {
+    display: flex;
+    position: fixed;
+    inset: 0;
+    z-index: 30;
+    flex-direction: column;
+    align-items: stretch;
+    flex-wrap: nowrap;
+    gap: 16px;
+    padding: 16px;
+    overflow-y: auto;
+    border-bottom: none;
+  }
+
+  .filter-bar.sheet-open .sheet-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .sheet-title {
+    font-size: 16px;
+    font-weight: 700;
+    color: #111827;
+  }
+
+  .sheet-close {
+    border: none;
+    background: none;
+    font-size: 18px;
+    color: #6b7280;
+    cursor: pointer;
+  }
+
+  .filter-bar.sheet-open .field {
+    font-size: 14px;
+  }
+
+  .filter-bar.sheet-open .search-btn {
+    margin-top: auto;
+    padding: 14px;
+    font-size: 16px;
+  }
 }

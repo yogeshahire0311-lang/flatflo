@@ -31,6 +31,24 @@ export class FilterBar {
 
   protected readonly canSearch = computed(() => this.location().length > 0);
 
+  /** Mobile: whether the full-screen "Edit search" sheet is open (UI spec §4). */
+  protected readonly sheetOpen = signal(false);
+
+  /** One-line recap of the current criteria for the collapsed mobile summary. */
+  protected readonly summary = computed(() => {
+    const areaName = this.areas().find((a) => a.id === this.location())?.name;
+    const bhkLabel = this.bhkOptions.find((o) => o.value === this.bhk())?.label ?? '';
+    return areaName ? `${areaName} · ${bhkLabel}` : 'Set your search';
+  });
+
+  protected openSheet(): void {
+    this.sheetOpen.set(true);
+  }
+
+  protected closeSheet(): void {
+    this.sheetOpen.set(false);
+  }
+
   /** Count of non-default refinement filters set (budget bounds + furnishing) — FR-014. */
   protected readonly activeFilterCount = computed(() => {
     let n = 0;
@@ -85,5 +103,7 @@ export class FilterBar {
       sort: this.sort(),
       page: 0,
     });
+    // On mobile the fields live in a sheet; searching dismisses it back to results.
+    this.closeSheet();
   }
 }

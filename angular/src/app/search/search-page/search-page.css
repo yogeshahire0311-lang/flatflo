@@ -4,25 +4,8 @@
   padding: 0 16px 32px;
 }
 
-.status {
-  padding: 24px 4px;
-  color: #6b7280;
-}
-
 .availability {
   margin: 0 0 12px;
   font-size: 12px;
   color: #6b7280;
-}
-
-.empty {
-  padding: 40px 16px;
-  text-align: center;
-  color: #6b7280;
-}
-
-.empty h2 {
-  margin: 0 0 8px;
-  font-size: 18px;
-  color: #374151;
 }

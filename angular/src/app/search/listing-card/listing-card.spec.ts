@@ -133,6 +133,24 @@ describe('ListingCard', () => {
     expect(openSpy).not.toHaveBeenCalledWith('u-nb', '_blank', 'noopener');
   });
 
+  it('exposes each source chip as its own focus stop with the accessible label (US2/a11y, FR-022)', () => {
+    const el = render(
+      group({
+        sources: [
+          { sourcePlatform: 'NoBroker', sourceUrl: 'u-nb', priceDisplay: '₹32,000', price: 32000, accessibleLabel: 'l1' },
+          {
+            sourcePlatform: 'MagicBricks', sourceUrl: 'u-mb', priceDisplay: '₹34,500', price: 34500,
+            accessibleLabel: 'View this listing on MagicBricks, ₹34,500 per month',
+          },
+        ],
+      }),
+    );
+
+    const chip = el.querySelector('a.chip') as HTMLAnchorElement;
+    // A real anchor is natively focusable (its own tab stop) and carries the accessible label verbatim.
+    expect(chip.getAttribute('aria-label')).toBe('View this listing on MagicBricks, ₹34,500 per month');
+  });
+
   it('shows the best-deal badge, "% below area average" subtext, and accent border when isBestDeal (US3)', () => {
     const el = render(group({ isBestDeal: true, bestDealDiscountPct: 14 }));
 
