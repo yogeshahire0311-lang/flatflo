@@ -6,6 +6,17 @@
   border-radius: 8px;
   margin-bottom: 12px;
   background: #fff;
+  cursor: pointer;
+}
+
+.listing-card:hover {
+  border-color: #c7d2fe;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.06);
+}
+
+.listing-card:focus-visible {
+  outline: 2px solid #2563eb;
+  outline-offset: 2px;
 }
 
 .photo {
@@ -69,6 +80,11 @@
   color: #6b7280;
 }
 
+.price .caption .src {
+  color: #374151;
+  font-weight: 600;
+}
+
 .meta {
   margin: 0;
   font-size: 13px;
@@ -95,4 +111,16 @@
   font-size: 12px;
   color: #374151;
   background: #f9fafb;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+a.chip:hover {
+  border-color: #2563eb;
+  color: #1d4ed8;
+}
+
+a.chip:focus-visible {
+  outline: 2px solid #2563eb;
+  outline-offset: 2px;
 }

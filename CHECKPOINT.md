@@ -2,7 +2,37 @@
 
 > Latest checkpoint on top. Older ones are appended under History.
 
-## Current — 2026-07-03 (evening)
+## Current — 2026-07-04
+
+**Branch:** `flatflo-0000` · **Last commit:** `76e369e Reconcile tasks.md to real state; correct checkpoint` · **Working tree:** 6 uncommitted files + untracked `mockups/`
+
+### Done
+- Implemented **US2 — Redirect to the original listing** (T033–T036, Phase 4 of [specs/001-unified-rental-search](specs/001-unified-rental-search/)), all in [listing-card](angular/src/app/search/listing-card/) + [search-page](angular/src/app/search/search-page/):
+  - **T034** — whole `listing-card` is a keyboard-focusable link (role="link", tabindex=0, Enter/Space activation) that opens the cheapest source's `sourceUrl` in a new tab via `window.open(url, '_blank', 'noopener')`; results view preserved.
+  - **T035** — each "Also listed on" chip is a real `<a target="_blank" rel="noopener">` opening its own source; `onChipClick` stops propagation + `preventDefault` to override the card default.
+  - **T036** — one-time "Listings link out to their source; availability isn't guaranteed." notice above the results in search-page (not per-card).
+  - **T033** — 3 US2 specs added to [listing-card.spec.ts](angular/src/app/search/listing-card/listing-card.spec.ts). **16 Angular specs green, ng build clean.**
+- **Design refinement (user-driven, during manual testing):** primary price now captioned "per month · from {source}" (chose Option 2 from [mockups/card-source-options.html](mockups/card-source-options.html)). Removed the redundant single-source plain chip — single source now conveyed only by the caption; multi-source cards keep their "Also listed on" chips. Spec updated.
+
+### Next step
+- **Commit US2** (deleting the throwaway `mockups/` aid), then implement **US3 — best-deal badge presentation** (T037/T038/T040): badge + "{pct}% below area average" subtext + 2px accent border in listing-card when `isBestDeal`. Backend best-deal computation + default sort already done.
+
+### Notes
+- ⚠️ **Manual pass NOT fully clean — image glitch to fix first (T050, currently PARTIAL):** the card with a broken property photo (Evershine Heights, seed URL `https://broken.example.com/missing-image.jpg`) renders a **broken image**. The 🏠 placeholder only shows when `primaryPhotoUrl` is null, not when a non-null URL fails to load. Need an `<img onerror>` fallback to the category placeholder so a broken image is never shown. **Do this before US3.**
+- **US2 is not yet committed** (6 modified files + untracked `mockups/`).
+- Two dev servers still running from this session: `gradlew bootRun` (:8080) and `ng serve` (:4200, hot-reload).
+- `mockups/card-source-options.html` is a throwaway visual aid — **delete it when committing US2.**
+
+### Open questions / TODOs
+- **Immediate sub-task before US3:** fix T050 `<img onerror>` fallback (see Notes) — never render a broken image.
+- **Deferred from US4:** Map-toggle entry point (rest of T045) and mobile "Edit search" full-screen sheet (T053).
+- **Phase 7 Polish not started** (T048–T056): UI states, per-source status, a11y pass, copy pass, timeout/partial-source seam, swap-seam test.
+
+---
+
+## History
+
+### 2026-07-03 (evening)
 
 **Branch:** `flatflo-0000` · **Last commit:** `d7b5b46 MVP ready with dummy data` · **Working tree:** uncommitted docs (CHECKPOINT.md, tasks.md, .claude/agents/)
 
@@ -25,8 +55,6 @@
 - Commit the reconciled docs + checkpoint-keeper agent (pending).
 
 ---
-
-## History
 
 ### 2026-07-03
 

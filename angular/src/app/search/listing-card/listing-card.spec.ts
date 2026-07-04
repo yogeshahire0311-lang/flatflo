@@ -35,11 +35,15 @@ describe('ListingCard', () => {
     return fixture.nativeElement as HTMLElement;
   }
 
-  it('renders title, price and "per month" caption', () => {
+  it('renders title, price, "per month" caption, and the cheapest source name', () => {
     const el = render(group());
     expect(el.querySelector('.title')?.textContent).toContain('2 BHK in Goregaon East');
     expect(el.querySelector('.price .amount')?.textContent).toContain('₹32,000');
-    expect(el.querySelector('.price .caption')?.textContent).toContain('per month');
+    const caption = el.querySelector('.price .caption')?.textContent;
+    expect(caption).toContain('per month');
+    // The primary price is captioned with its source (Option 2).
+    expect(caption).toContain('from');
+    expect(el.querySelector('.price .caption .src')?.textContent).toContain('NoBroker');
   });
 
   it('shows an "Also listed on" row with a chip per additional source', () => {
@@ -57,17 +61,87 @@ describe('ListingCard', () => {
     expect(el.querySelector('.chip')?.textContent).toContain('MagicBricks');
   });
 
-  it('renders a single plain chip for a single-source group', () => {
+  it('shows no source chips for a single-source group (the source is in the price caption)', () => {
     const el = render(group());
     expect(el.querySelector('.sources-prefix')).toBeNull();
-    const chips = el.querySelectorAll('.chip');
-    expect(chips.length).toBe(1);
-    expect(chips[0].textContent).toContain('NoBroker');
+    // Single source is conveyed by the "from {source}" caption, not a redundant chip.
+    expect(el.querySelectorAll('.chip').length).toBe(0);
+    expect(el.querySelector('.price .caption .src')?.textContent).toContain('NoBroker');
   });
 
   it('falls back to a placeholder when there is no photo', () => {
     const el = render(group({ primaryPhotoUrl: null }));
     expect(el.querySelector('.photo img')).toBeNull();
     expect(el.querySelector('.photo-placeholder')).not.toBeNull();
+  });
+
+  it('falls back to the placeholder when the photo URL fails to load (T050)', () => {
+    const fixture = TestBed.createComponent(ListingCard);
+    (fixture.componentRef as ComponentRef<ListingCard>).setInput(
+      'group',
+      group({ primaryPhotoUrl: 'https://broken.example.com/missing.jpg' }),
+    );
+    fixture.detectChanges();
+    const el = fixture.nativeElement as HTMLElement;
+
+    // Initially the img renders; simulate a load failure.
+    const img = el.querySelector('.photo img') as HTMLImageElement;
+    expect(img).not.toBeNull();
+    img.dispatchEvent(new Event('error'));
+    fixture.detectChanges();
+
+    // Now it shows the placeholder, never a broken image.
+    expect(el.querySelector('.photo img')).toBeNull();
+    expect(el.querySelector('.photo-placeholder')).not.toBeNull();
+  });
+
+  it('opens the cheapest source in a new tab when the card body is clicked (US2)', () => {
+    const openSpy = spyOn(window, 'open');
+    const el = render(
+      group({
+        sources: [
+          { sourcePlatform: 'NoBroker', sourceUrl: 'u-nb', priceDisplay: '₹32,000', price: 32000, accessibleLabel: 'l1' },
+          { sourcePlatform: 'MagicBricks', sourceUrl: 'u-mb', priceDisplay: '₹34,500', price: 34500, accessibleLabel: 'l2' },
+        ],
+      }),
+    );
+
+    (el.querySelector('.listing-card') as HTMLElement).click();
+
+    expect(openSpy).toHaveBeenCalledWith('u-nb', '_blank', 'noopener');
+  });
+
+  it('opens a specific source in a new tab when its chip is clicked, not the card default (US2)', () => {
+    const openSpy = spyOn(window, 'open');
+    const el = render(
+      group({
+        sources: [
+          { sourcePlatform: 'NoBroker', sourceUrl: 'u-nb', priceDisplay: '₹32,000', price: 32000, accessibleLabel: 'l1' },
+          { sourcePlatform: 'MagicBricks', sourceUrl: 'u-mb', priceDisplay: '₹34,500', price: 34500, accessibleLabel: 'l2' },
+        ],
+      }),
+    );
+
+    const chip = el.querySelector('a.chip') as HTMLAnchorElement;
+    // The chip carries its own source URL as a real href (middle/ctrl-click friendly).
+    expect(chip.getAttribute('href')).toBe('u-mb');
+    expect(chip.getAttribute('target')).toBe('_blank');
+
+    // A left-click opens that chip's source (not the card default) in a new tab.
+    chip.dispatchEvent(new MouseEvent('click', { bubbles: true }));
+    expect(openSpy).toHaveBeenCalledWith('u-mb', '_blank', 'noopener');
+    expect(openSpy).not.toHaveBeenCalledWith('u-nb', '_blank', 'noopener');
+  });
+
+  it('exposes the card as a keyboard-focusable link that activates on Enter (US2)', () => {
+    const openSpy = spyOn(window, 'open');
+    const el = render(group());
+    const card = el.querySelector('.listing-card') as HTMLElement;
+
+    expect(card.getAttribute('role')).toBe('link');
+    expect(card.getAttribute('tabindex')).toBe('0');
+
+    card.dispatchEvent(new KeyboardEvent('keydown', { key: 'Enter' }));
+    expect(openSpy).toHaveBeenCalledWith('u-nb', '_blank', 'noopener');
   });
 });

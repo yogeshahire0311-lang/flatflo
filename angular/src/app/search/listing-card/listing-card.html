@@ -1,7 +1,13 @@
-<article class="listing-card">
+<article
+  class="listing-card"
+  role="link"
+  tabindex="0"
+  [attr.aria-label]="group().title + ', from ' + cheapest().priceDisplay + ' per month'"
+  (click)="openSource(cheapest().sourceUrl)"
+  (keydown)="onCardKeydown($event)">
   <div class="photo">
-    @if (group().primaryPhotoUrl) {
-      <img [src]="group().primaryPhotoUrl" [alt]="group().title" loading="lazy" />
+    @if (showPhoto()) {
+      <img [src]="group().primaryPhotoUrl" [alt]="group().title" loading="lazy" (error)="onImageError()" />
     } @else {
       <div class="photo-placeholder" aria-hidden="true">🏠</div>
     }
@@ -12,7 +18,7 @@
       <h3 class="title">{{ group().title }}</h3>
       <div class="price">
         <span class="amount">{{ group().priceDisplay }}</span>
-        <span class="caption">per month</span>
+        <span class="caption">per month · from <span class="src">{{ cheapest().sourcePlatform }}</span></span>
       </div>
     </div>
 
@@ -22,12 +28,14 @@
       <div class="sources">
         <span class="sources-prefix">Also listed on</span>
         @for (offer of otherSources(); track offer.sourceUrl) {
-          <span class="chip">{{ offer.sourcePlatform }} · {{ offer.priceDisplay }}</span>
+          <a
+            class="chip"
+            [href]="offer.sourceUrl"
+            target="_blank"
+            rel="noopener"
+            [attr.aria-label]="offer.accessibleLabel"
+            (click)="onChipClick($event, offer.sourceUrl)">{{ offer.sourcePlatform }} · {{ offer.priceDisplay }}</a>
         }
-      </div>
-    } @else {
-      <div class="sources">
-        <span class="chip chip-plain">{{ group().sources[0].sourcePlatform }}</span>
       </div>
     }
   </div>
