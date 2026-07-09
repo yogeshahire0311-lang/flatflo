@@ -3,7 +3,7 @@ package com.flatflow.search;
 import com.flatflow.grouping.ListingGroup;
 import com.flatflow.grouping.ListingGrouper;
 import com.flatflow.grouping.SourceOffer;
-import com.flatflow.listing.ListingSource;
+import com.flatflow.search.SourceAggregator.Aggregation;
 import com.flatflow.search.dto.ListingGroupDto;
 import com.flatflow.search.dto.SearchResponseDto;
 import com.flatflow.search.dto.SourceOfferDto;
@@ -13,8 +13,9 @@ import java.util.List;
 import org.springframework.stereotype.Service;
 
 /**
- * Runs a search over the aggregated feed: takes grouped listings from the
- * {@link ListingGrouper}, filters them, orders them by the requested
+ * Runs a search over the aggregated feed: pulls listings (plus per-source
+ * reachability) from the {@link SourceAggregator}, groups them via the
+ * {@link ListingGrouper}, filters, orders them by the requested
  * {@link SortMode}, paginates, and maps to boundary DTOs. Stateless.
  */
 @Service
@@ -22,16 +23,18 @@ public class SearchService {
 
     static final int PAGE_SIZE = 20;
 
-    private final ListingSource listingSource;
+    private final SourceAggregator aggregator;
     private final ListingGrouper grouper;
 
-    public SearchService(ListingSource listingSource, ListingGrouper grouper) {
-        this.listingSource = listingSource;
+    public SearchService(SourceAggregator aggregator, ListingGrouper grouper) {
+        this.aggregator = aggregator;
         this.grouper = grouper;
     }
 
     public SearchResponseDto search(SearchQuery query) {
-        List<ListingGroup> all = grouper.group(listingSource.findAll());
+        // Fan out across sources within the time budget; throws 503 if all are down.
+        Aggregation aggregation = aggregator.aggregate();
+        List<ListingGroup> all = grouper.group(aggregation.listings());
 
         List<ListingGroup> matched = all.stream()
                 .filter(g -> g.locality().equalsIgnoreCase(query.location().displayName()))
@@ -52,8 +55,9 @@ public class SearchService {
 
         boolean hasMore = to < count;
 
-        // The MVP has a single always-available seeded source.
-        List<SourceStatusDto> sourceStatus = List.of(new SourceStatusDto("SeedFeed", true));
+        List<SourceStatusDto> sourceStatus = aggregation.statuses().stream()
+                .map(s -> new SourceStatusDto(s.sourcePlatform(), s.reachable()))
+                .toList();
 
         return new SearchResponseDto(
                 pageResults, count, dupCount, query.sort().name(),

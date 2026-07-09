@@ -13,6 +13,7 @@ import com.flatflow.listing.ListingStatus;
 import com.flatflow.listing.SupportedArea;
 import com.flatflow.search.dto.ListingGroupDto;
 import com.flatflow.search.dto.SearchResponseDto;
+import java.time.Duration;
 import java.util.ArrayList;
 import java.util.List;
 import org.junit.jupiter.api.Test;
@@ -35,7 +36,9 @@ class SearchServiceTest {
 
     private SearchService serviceFor(List<Listing> listings) {
         ListingSource source = () -> listings;
-        return new SearchService(source, new SeedListingGrouper(new AreaAverageCalculator()));
+        SourceAggregator aggregator = new SourceAggregator(
+                List.of(new SourceAggregator.NamedSource("SeedFeed", source)), Duration.ofSeconds(8));
+        return new SearchService(aggregator, new SeedListingGrouper(new AreaAverageCalculator()));
     }
 
     private SearchQuery query(BhkType bhk) {

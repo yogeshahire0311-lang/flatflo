@@ -83,6 +83,32 @@ describe('FilterBar', () => {
     expect(form.classList).not.toContain('sheet-open');
   });
 
+  it('toggles list/map view and shows the deferred-map notice (FR-014)', () => {
+    const fixture = render();
+    const el = fixture.nativeElement as HTMLElement;
+
+    const options = Array.from(el.querySelectorAll('.view-toggle .view-option')) as HTMLButtonElement[];
+    const list = options.find((o) => o.textContent?.trim() === 'List')!;
+    const map = options.find((o) => o.textContent?.trim() === 'Map')!;
+
+    // Defaults to list: List is pressed, no notice.
+    expect(list.getAttribute('aria-pressed')).toBe('true');
+    expect(el.querySelector('.map-notice')).toBeNull();
+
+    // Selecting Map is the entry point: it presses Map and surfaces the notice,
+    // without removing the results/list context.
+    map.click();
+    fixture.detectChanges();
+    expect(map.getAttribute('aria-pressed')).toBe('true');
+    expect(list.getAttribute('aria-pressed')).toBe('false');
+    expect(el.querySelector('.map-notice')?.textContent).toContain('coming soon');
+
+    // Back to list dismisses the notice.
+    list.click();
+    fixture.detectChanges();
+    expect(el.querySelector('.map-notice')).toBeNull();
+  });
+
   it('dismisses the sheet after a successful search from it', () => {
     const fixture = render();
     const el = fixture.nativeElement as HTMLElement;

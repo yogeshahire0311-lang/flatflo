@@ -34,6 +34,17 @@ export class FilterBar {
   /** Mobile: whether the full-screen "Edit search" sheet is open (UI spec §4). */
   protected readonly sheetOpen = signal(false);
 
+  /**
+   * Right-aligned list/map view toggle (FR-014). The map *screen* is deferred to
+   * a later feature, so this is the in-scope entry point only: selecting "Map"
+   * surfaces a "coming soon" note without leaving the results list.
+   */
+  protected readonly view = signal<'list' | 'map'>('list');
+
+  protected setView(value: 'list' | 'map'): void {
+    this.view.set(value);
+  }
+
   /** One-line recap of the current criteria for the collapsed mobile summary. */
   protected readonly summary = computed(() => {
     const areaName = this.areas().find((a) => a.id === this.location())?.name;

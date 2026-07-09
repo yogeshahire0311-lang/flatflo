@@ -26,4 +26,11 @@ public class SearchExceptionHandler {
                         "error", "MISSING_PARAMETER",
                         "message", "Missing required parameter '" + ex.getParameterName() + "'."));
     }
+
+    /** All configured sources failed/timed out → 503, distinct from an empty result (FR-017). */
+    @ExceptionHandler(AllSourcesUnavailableException.class)
+    public ResponseEntity<Map<String, String>> handleAllSourcesDown(AllSourcesUnavailableException ex) {
+        return ResponseEntity.status(HttpStatus.SERVICE_UNAVAILABLE)
+                .body(Map.of("error", "ALL_SOURCES_UNAVAILABLE", "message", ex.getMessage()));
+    }
 }

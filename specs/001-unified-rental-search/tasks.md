@@ -4,7 +4,7 @@ description: "Task list for Unified Rental Search (FlatFlo MVP)"
 
 # Tasks: Unified Rental Search (FlatFlo MVP)
 
-> **Status — reconciled 2026-07-03** (39/56 tasks done)
+> **Status — reconciled 2026-07-09** (56/56 tasks done — feature complete)
 >
 > | Phase | State |
 > |---|---|
@@ -13,10 +13,10 @@ description: "Task list for Unified Rental Search (FlatFlo MVP)"
 > | US1 — search + grouped cards (T023–T032) | ✅ done |
 > | US2 — redirect (T033–T036) | ✅ done — card + chips redirect in new tab; availability notice shown |
 > | US3 — best-deal presentation (T037, T038, T040) | ✅ done — badge + "% below area average" subtext + 2px accent border render iff `isBestDeal`; default sort T039 ✅ done |
-> | US4 — filters + sort (T041–T047) | ✅ done, **except T045 Map-toggle** (deferred; furnishing selector, sticky bar, Filters badge done) |
-> | Polish (T048–T056) | ⏳ mostly not started — **T050 image `onerror` fallback ✅ done**; a11y/copy/states/seams pending |
+> | US4 — filters + sort (T041–T047) | ✅ done — sticky bar, furnishing selector, Filters badge, **T045 Map-toggle entry point** (map screen itself deferred to a later feature) |
+> | Polish (T048–T056) | ✅ done — states, per-source status, a11y, copy, mobile sheet (`c0d49ac`); **T054** aggregation timeout/partial-source seam + `SourceAggregatorTest`; **T055** quickstart run; **T056** `SwapSeamTest` |
 >
-> **Recommended next:** Phase 7 Polish (T048–T056) — UI states, per-source status, a11y pass, copy pass, timeout/partial-source seam. Deferred: T045 Map-toggle, T053 mobile edit-search sheet.
+> **All 56 tasks done — feature complete.** backend 22 tests + frontend 39 specs green. Next work is new features (AI-agent listing source, full map screen, etc.), each needing its own spec.
 
 **Input**: Design documents from `specs/001-unified-rental-search/`
 
@@ -174,7 +174,7 @@ description: "Task list for Unified Rental Search (FlatFlo MVP)"
 
 - [x] T043 [US4] Add budget-range + furnishing filtering and PRICE_ASC/PRICE_DESC/NEWEST sorting to `SearchService` in `java/flatflo/src/main/java/com/flatflow/search/SearchService.java` (satisfies T041)
 - [x] T044 [US4] Accept/validate `budgetMin`, `budgetMax`, `furnishing`, `sort` params in `SearchController` (400 on invalid combos) in `java/flatflo/src/main/java/com/flatflow/search/SearchController.java` (satisfies T042)
-- [ ] T045 [US4] Make the filter bar sticky; add furnishing selector, a "Filters" control showing active non-default filter count as a badge, and a "Map" toggle entry point in `angular/src/app/search/filter-bar/` (FR-010, FR-014) — **PARTIAL: sticky + furnishing selector + Filters badge done; Map toggle deferred**
+- [x] T045 [US4] Make the filter bar sticky; add furnishing selector, a "Filters" control showing active non-default filter count as a badge, and a "Map" toggle entry point in `angular/src/app/search/filter-bar/` (FR-010, FR-014) — **done: right-aligned List/Map view toggle added; selecting Map surfaces a "map view is coming soon" notice (the map screen itself is a deferred later feature per spec), covered by a filter-bar spec**
 - [x] T046 [US4] Add a sort control to `results-meta` and wire sort/filter changes to re-query without full reload, syncing all query params to the URL in `angular/src/app/search/search-page/` (depends on T045)
 - [x] T047 [P] [US4] Component spec: active-filter count badge, clear-filters restores set, sort switch re-queries, URL params update in `angular/src/app/search/`
 
@@ -186,15 +186,15 @@ description: "Task list for Unified Rental Search (FlatFlo MVP)"
 
 **Purpose**: Robustness, states, accessibility, and validation that span stories.
 
-- [ ] T048 [P] Implement UI states in `angular/src/app/search/ui-states/`: skeleton/loading (3–5 cards, filter bar not blocked), empty ("No flats match these filters" + widen suggestion), and full-width error + retry (all sources down) — FR-015, FR-016, FR-017
-- [ ] T049 [P] Add per-source status handling: surface "Results from N of M sources" in `results-meta` on partial failure; treat `503 ALL_SOURCES_UNAVAILABLE` as the error state in `angular/src/app/search/search-page/` (FR-017)
-- [ ] T050 [P] Image handling in `listing-card`: native lazy-load + `onerror` fallback to a category-icon placeholder (never broken-image) in `angular/src/app/search/listing-card/` (FR-018) — **PARTIAL: native lazy-load + null-URL placeholder done; `onerror` fallback for broken loads not yet**
-- [ ] T051 [P] Accessibility pass: card focus ring + keyboard activation, per-chip focus stop with accessible label ("View this listing on {source}, ₹{price} per month"), best-deal conveyed via text in `angular/src/app/search/listing-card/` (FR-022)
-- [ ] T052 [P] Apply reference copy (sentence case; no exclamation/"successfully"/"please") across meta line, badge/subtext, chip prefix, empty state, price caption in `angular/src/app/search/` (FR-023)
-- [ ] T053 [P] Mobile: collapse filter-bar fields into a single "Edit search" summary opening a full-screen sheet in `angular/src/app/search/filter-bar/` (UI spec §4)
-- [ ] T054 Add the ~3s-first-page / ~8s-source-drop timeout + partial-source seam in the aggregation path (backend) with a unit test asserting a slow/failed source is dropped and reported in `java/flatflo/src/main/java/com/flatflow/search/` + test (FR-021)
-- [ ] T055 Run `quickstart.md` V1–V12 end-to-end against the seeded feed and fix any gaps
-- [ ] T056 [P] Verify swap seams: a unit test injecting an alternate `ListingSource` and an alternate `ListingGrouper` proves no controller/DTO change is required (FR-002/FR-003) in `java/flatflo/src/test/java/com/flatflow/`
+- [x] T048 [P] Implement UI states in `angular/src/app/search/ui-states/`: skeleton/loading (3–5 cards, filter bar not blocked), empty ("No flats match these filters" + widen suggestion), and full-width error + retry (all sources down) — FR-015, FR-016, FR-017 — done (`ui-states/skeleton-state`, `empty-state`, `error-state`), committed `c0d49ac`
+- [x] T049 [P] Add per-source status handling: surface "Results from N of M sources" in `results-meta` on partial failure; treat `503 ALL_SOURCES_UNAVAILABLE` as the error state in `angular/src/app/search/search-page/` (FR-017) — done, committed `c0d49ac`
+- [x] T050 [P] Image handling in `listing-card`: native lazy-load + `onerror` fallback to a category-icon placeholder (never broken-image) in `angular/src/app/search/listing-card/` (FR-018) — done: `(error)="onImageError()"` + native lazy-load + null-URL placeholder
+- [x] T051 [P] Accessibility pass: card focus ring + keyboard activation, per-chip focus stop with accessible label ("View this listing on {source}, ₹{price} per month"), best-deal conveyed via text in `angular/src/app/search/listing-card/` (FR-022) — done (`accessibleLabel` verified live at the API boundary), committed `c0d49ac`
+- [x] T052 [P] Apply reference copy (sentence case; no exclamation/"successfully"/"please") across meta line, badge/subtext, chip prefix, empty state, price caption in `angular/src/app/search/` (FR-023) — done, committed `c0d49ac`
+- [x] T053 [P] Mobile: collapse filter-bar fields into a single "Edit search" summary opening a full-screen sheet in `angular/src/app/search/filter-bar/` (UI spec §4) — done, committed `c0d49ac`
+- [x] T054 Add the ~3s-first-page / ~8s-source-drop timeout + partial-source seam in the aggregation path (backend) with a unit test asserting a slow/failed source is dropped and reported in `java/flatflo/src/main/java/com/flatflow/search/` + test (FR-021) — **done: `SourceAggregator` fans out with a per-source timeout, drops slow/failed sources and reports them `reachable:false`, raises `AllSourcesUnavailableException` (→503) when all fail; covered by `SourceAggregatorTest` (4 tests)**
+- [x] T055 Run `quickstart.md` V1–V12 end-to-end against the seeded feed and fix any gaps — done: live API run over the seed confirmed V1 grouped cards + dup meta (4 flats / 1 merged), V2 multi-source chips, V3 best-deal (23%) vs boundary, V4 all sort modes, V6 budget filter, V10 empty state, plus 400s (invalid location / budgetMin>budgetMax / missing bhk); V7–V9/V11/V12 covered by component specs + aggregation unit tests. No gaps found.
+- [x] T056 [P] Verify swap seams: a unit test injecting an alternate `ListingSource` and an alternate `ListingGrouper` proves no controller/DTO change is required (FR-002/FR-003) in `java/flatflo/src/test/java/com/flatflow/` — done: `SwapSeamTest`
 
 ---
 

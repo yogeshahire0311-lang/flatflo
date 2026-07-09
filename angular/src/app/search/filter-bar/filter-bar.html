@@ -57,4 +57,21 @@
   }
 
   <button type="submit" class="search-btn" [disabled]="!canSearch()">Search</button>
+
+  <!-- Right-aligned list/map view toggle (FR-014). The map screen is deferred;
+       this is the in-scope entry point only. -->
+  <div class="view-toggle" role="group" aria-label="Results view">
+    <button type="button" class="view-option"
+            [class.active]="view() === 'list'"
+            [attr.aria-pressed]="view() === 'list'"
+            (click)="setView('list')">List</button>
+    <button type="button" class="view-option"
+            [class.active]="view() === 'map'"
+            [attr.aria-pressed]="view() === 'map'"
+            (click)="setView('map')">Map</button>
+  </div>
 </form>
+
+@if (view() === 'map') {
+  <p class="map-notice" role="status">Map view is coming soon. Showing the list for now.</p>
+}

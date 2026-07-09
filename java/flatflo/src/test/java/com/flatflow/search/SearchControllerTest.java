@@ -17,6 +17,7 @@ import org.springframework.test.web.servlet.MockMvc;
 @WebMvcTest(SearchController.class)
 @Import({
         SearchService.class,
+        SourceAggregator.class,
         com.flatflow.listing.SeededListingSource.class,
         com.flatflow.grouping.SeedListingGrouper.class,
         com.flatflow.grouping.AreaAverageCalculator.class,
