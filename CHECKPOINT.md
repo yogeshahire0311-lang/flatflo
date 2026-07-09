@@ -2,11 +2,60 @@
 
 > Latest checkpoint on top. Older ones are appended under History.
 
-## Current — 2026-07-05
+## Current — 2026-07-09
+
+**Branch:** `flatflo-0000` · **Last commit:** `c040ccb Complete feature 001: map toggle, aggregation seam, swap-seam test` · **Working tree:** 1 uncommitted file (`.claude/settings.json`, intentional)
+
+### Features shipped so far (what works today)
+
+The whole product at this point is **Feature 001 — Unified Rental Search (MVP)**, running on a seeded (manual) feed. What a user can do end-to-end:
+
+- **Unified search across platforms** — one search by location (area picker from `/api/areas`, no free text), budget range, and BHK returns grouped results from multiple sources in a single list.
+- **Duplicate grouping into one card** — the same flat listed on ≥2 sources appears once, with a dedup-aware meta line ("{count} flats found, {dupCount} duplicates merged").
+- **Cheapest-source surfacing + comparison chips** — the card price is the cheapest source; an "Also listed on" row shows each other source with its own price.
+- **Best-deal signal** — a "Best deal" badge + "{pct}% below area average" subtext + 2px accent border appear only when the cheapest price is ≥10% below the locality+BHK area average; default sort surfaces best deals first.
+- **Sort modes** — best deal (default), price low–high, price high–low, newest.
+- **Filters + URL state** — budget range + furnishing filters, a "Filters" active-count badge; changes re-query without a full reload and sync to URL query params (shareable/bookmarkable).
+- **Redirect to source** — clicking the card opens the cheapest source in a new tab; clicking a specific chip opens that source; availability-not-guaranteed notice shown.
+- **UI states** — skeleton/loading (filter bar not blocked), empty state ("No flats match these filters" + widen suggestion), full-width error + retry.
+- **Per-source status** — "Results from N of M sources" on partial failure; `503 ALL_SOURCES_UNAVAILABLE` → error state (not empty state).
+- **Robust images** — native lazy-load + `onerror` fallback to a category placeholder (never a broken-image glyph).
+- **Accessibility** — card focus ring + keyboard activation, per-chip focus stop with an accessible label ("View this listing on {source}, ₹{price} per month"), best-deal conveyed as text (not color alone).
+- **Mobile** — fields collapse into a single "Edit search" summary opening a full-screen sheet.
+- **Map toggle (entry point only)** — right-aligned List/Map toggle; "Map" surfaces a "coming soon" notice (the map screen itself is a deferred later feature).
+- **Backend robustness** — `SourceAggregator` fans out across sources within an ~8s per-source budget, drops slow/failed sources (reports `reachable:false`), and returns 503 only when all sources are down. Source and grouper are swappable behind seams (proven by `SwapSeamTest`).
+
+### Done
+- **Feature 001 (Unified Rental Search MVP) is fully complete — 56/56 tasks.** ([specs/001-unified-rental-search](specs/001-unified-rental-search/))
+- **Discovered the prior 2026-07-05 checkpoint was stale** — repo was already ahead of it. Commit `c0d49ac` had landed the Phase 7 frontend (UI states, per-source status, a11y, copy, mobile sheet = T048/T049/T051/T052/T053), plus broken uncommitted backend work for T054.
+- **Fixed a Spring build blocker:** the in-progress [SourceAggregator.java](java/flatflo/src/main/java/com/flatflow/search/SourceAggregator.java) had two public constructors and no `@Autowired`, so Spring couldn't instantiate it (all 5 context/@WebMvcTest tests failed). Fixed by annotating the production constructor `@Autowired` and adding `SourceAggregator` to the `@WebMvcTest` `@Import` list in `SearchControllerTest`.
+- **T054 (aggregation timeout / partial-source seam)** done: [SourceAggregator.java](java/flatflo/src/main/java/com/flatflow/search/SourceAggregator.java) fans out across sources within a per-source time budget, drops slow/failed sources and reports them `reachable:false`, raises [AllSourcesUnavailableException.java](java/flatflo/src/main/java/com/flatflow/search/AllSourcesUnavailableException.java) → HTTP 503 when all fail; 503 handler added in [SearchExceptionHandler.java](java/flatflo/src/main/java/com/flatflow/search/SearchExceptionHandler.java); [SearchService.java](java/flatflo/src/main/java/com/flatflow/search/SearchService.java) rewired to consume the aggregator. Added `SourceAggregatorTest` (4 tests: merge-reachable, drop-slow, drop-failing, all-down→503).
+- **T056 (swap-seam test)** done: [SwapSeamTest.java](java/flatflo/src/test/java/com/flatflow/search/SwapSeamTest.java) injects an alternate `ListingSource` AND an alternate `ListingGrouper`, proving no controller/DTO change is needed (FR-002/FR-003).
+- **T055 (quickstart)** done: ran V1–V12 live against the seeded feed via the running backend (curl) — grouped cards + dup meta (4 flats / 1 merged), multi-source chips, best-deal 23% vs boundary, all sort modes, budget filter, empty state, and 400s (invalid location / budgetMin>budgetMax / missing bhk). No gaps.
+- **T045 (Map-toggle entry point)** done — the last remaining US4 task: right-aligned List/Map view toggle in the filter-bar; selecting "Map" surfaces a "Map view is coming soon. Showing the list for now." notice (role="status"); the map *screen* stays deferred to a later feature per spec. Accessible segmented control (role="group", aria-pressed per option) + a filter-bar spec. User confirmed live.
+- **Verification:** backend `gradlew test` = **22 green**; frontend `ng test` = **39 green**; live manual pass over both servers done.
+
+### Next step
+- **Recommended next feature (not committed scope — needs its own `/speckit-specify`):** the **AI-agent-driven listing source** (the "Claude search" JSON source) that replaces the seeded feed. The `ListingSource` + `SourceAggregator` + swap-seam test were built precisely so this drops in with no controller/DTO/UI change.
+
+### Notes
+- **The swap seam is real and tested:** a new `ListingSource` implementation returning the same raw `Listing` JSON shape requires NO change to `SearchController`, the DTOs, or the Angular app — proven by [SwapSeamTest.java](java/flatflo/src/test/java/com/flatflow/search/SwapSeamTest.java). This is the seam the Claude source plugs into.
+- **Aggregation budget:** [SourceAggregator.java](java/flatflo/src/main/java/com/flatflow/search/SourceAggregator.java) uses an ~8s per-source timeout in production wiring (`Duration.ofSeconds(8)`). Slow/failed sources are dropped and reported `reachable:false`; all-down → HTTP 503.
+- Both dev servers (:8080 `bootRun`, :4200 `ng serve`) were started for manual testing this session and have been **shut down** at the end.
+- `.claude/settings.json` remains **intentionally uncommitted** (unrelated change, same as prior checkpoints).
+
+### Open questions / TODOs
+- **Deferred later features (each needs its own spec):** full Map view screen, authoritative area-average source, listing detail page, area insight / rent-trend charts, saved searches / favorites / alerts / accounts.
+
+---
+
+## History
+
+### 2026-07-05
 
 **Branch:** `flatflo-0000` · **Last commit:** `eb9e3d6 US3: best-deal presentation — badge, % subtext, accent border` · **Working tree:** 1 uncommitted file (`.claude/settings.json`, intentional)
 
-### Done
+#### Done
 - Implemented **US3 — best-deal presentation** (Phase 5 of [specs/001-unified-rental-search](specs/001-unified-rental-search/), tasks T037/T038/T040), committed as `eb9e3d6` (6 files):
   - **T040 (presentation)** in [listing-card](angular/src/app/search/listing-card/): added `isBestDeal()` and `bestDealSubtext()` computeds to [listing-card.ts](angular/src/app/search/listing-card/listing-card.ts) ("{pct}% below area average", null when not a deal); [listing-card.html](angular/src/app/search/listing-card/listing-card.html) renders a **"Best deal" badge + subtext** in a new title-line, `[class.best-deal]` on the card, and folds the best-deal fact into the `aria-label` for a11y text conveyance; [listing-card.css](angular/src/app/search/listing-card/listing-card.css) adds a **2px `#059669` accent border** (kept on hover) plus green badge/subtext styles.
   - **T038 (component spec)** — 3 tests: badge/subtext/border render iff `isBestDeal`; nothing renders for a non-deal group; accessible label conveys the deal as text.
@@ -15,21 +64,19 @@
 - Confirmed the prior checkpoint's "fix T050 first" sub-task was already resolved: commit `e8c3d45` had committed US2 **and** fixed the T050 image `onerror` glitch, so the only real remaining work was US3.
 - **Verification:** Angular **20/20 specs pass**, `ng build` clean; backend full `gradlew test` **BUILD SUCCESSFUL**.
 
-### Next step
+#### Next step
 - **Start Phase 7 Polish (T048–T056)** — UI states, per-source status, a11y pass, copy pass, timeout/partial-source seam, swap-seam test. Exact entry point left open; the **a11y pass (T051)** and **copy pass (T052)** are natural first picks while the card work is fresh in mind.
 
-### Notes
+#### Notes
 - Clean stopping point — no blockers, no pending decisions. US3 is fully done, committed, and both test suites are green.
 - `.claude/settings.json` is intentionally left uncommitted (unrelated change, still modified in the working tree).
 - No dev servers were started this session (tests run via `gradlew test` and `ng test --watch=false`).
 - **T050 image `onerror` fallback is now DONE** (was PARTIAL in the prior checkpoint) — fixed in commit `e8c3d45`.
 
-### Open questions / TODOs
+#### Open questions / TODOs
 - **Deferred ("someday", not prioritized ahead of Polish):** T045 Map-toggle entry point (rest of US4) and T053 mobile "Edit search" full-screen sheet.
 
 ---
-
-## History
 
 ### 2026-07-04
 
